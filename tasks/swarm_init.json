@@ -1,0 +1,12 @@
+{
+    "description": "Initialize docker swarm",
+    "input_method": "environment",
+    "supports_noop": false,
+    "implementations": [
+        {"name": "swarm_init_linux.sh", "requirements": ["shell"]},
+        {"name": "swarm_init_windows.ps1", "requirements": ["powershell"]}
+    ],
+    "parameters": {
+    }
+  }
+  

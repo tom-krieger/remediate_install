@@ -1,0 +1,12 @@
+{
+    "description": "Install Puppet remediate",
+    "input_method": "environment",
+    "supports_noop": false,
+    "implementations": [
+        {"name": "install_remediate_linux.sh", "requirements": ["shell"]},
+        {"name": "install_remediate_windows.ps1", "requirements": ["powershell"]}
+    ],
+    "parameters": {
+    }
+  }
+  

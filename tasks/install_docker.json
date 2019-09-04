@@ -1,6 +1,6 @@
 {
-    "description": "Install Docker on Linux systems",
-    "input_method": "stdin",
+    "description": "Install Docker",
+    "input_method": "environment",
     "supports_noop": false,
     "implementations": [
         {"name": "install_docker_linux.sh", "requirements": ["shell"]},
@@ -11,9 +11,13 @@
         "description": "Operation system",
         "type": "String[1]"
       },
-      "type": {
+      "ostype": {
         "description": "Type of the Linux system like Debian, Ubuntu, Redhat",
-        "type": "Enum[Debian, Ubuntu, Redhat]"
+        "type": "Enum['Debian', 'Ubuntu', 'Redhat']"
+      },
+      "removeold": {
+        "description": "Remove old docker packages before install new ones",
+        "type": "String[1]"
       }
     }
   }

@@ -1,0 +1,16 @@
+{
+    "description": "Install Docker Compose",
+    "input_method": "environment",
+    "supports_noop": false,
+    "implementations": [
+        {"name": "install_docker_compose_linux.sh", "requirements": ["shell"]},
+        {"name": "install_docker_compose_windows.ps1", "requirements": ["powershell"]}
+    ],
+    "parameters": {
+      "compose_version": {
+        "description": "Verskion of docker-compose to install",
+        "type": "String[1]"
+      }
+    }
+  }
+  
