@@ -1,0 +1,20 @@
+{
+    "description": "Install Docker on Linux systems",
+    "input_method": "stdin",
+    "supports_noop": false,
+    "implementations": [
+        {"name": "install_docker_linux.sh", "requirements": ["shell"]},
+        {"name": "install_docker_windows.ps1", "requirements": ["powershell"]}
+    ],
+    "parameters": {
+      "os": {
+        "description": "Operation system",
+        "type": "String[1]"
+      },
+      "type": {
+        "description": "Type of the Linux system like Debian, Ubuntu, Redhat",
+        "type": "Enum[Debian, Ubuntu, Redhat]"
+      }
+    }
+  }
+  

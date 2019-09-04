@@ -1,0 +1,6 @@
+# mod 'puppetlabs-docker', '3.7.0'
+# mod 'puppetlabs-stdlib', '6.0.0'
+# mod 'puppetlabs-apt', '7.1.0'
+# mod 'puppetlabs-translate', '2.0.0'
+# mod 'puppetlabs-powershell', '2.3.0'
+# mod 'puppetlabs-reboot', '2.2.0'
