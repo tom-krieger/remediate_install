@@ -1,24 +1,34 @@
 {
-    "description": "Install Docker",
-    "input_method": "environment",
-    "supports_noop": false,
-    "implementations": [
-        {"name": "install_docker_linux.sh", "requirements": ["shell"]},
-        {"name": "install_docker_windows.ps1", "requirements": ["powershell"]}
-    ],
-    "parameters": {
-      "os": {
-        "description": "Operation system",
-        "type": "String[1]"
-      },
-      "ostype": {
-        "description": "Type of the Linux system like Debian, Ubuntu, Redhat",
-        "type": "Enum['Debian', 'Ubuntu', 'Redhat']"
-      },
-      "removeold": {
-        "description": "Remove old docker packages before install new ones",
-        "type": "String[1]"
-      }
+  "description": "Install Docker",
+  "input_method": "environment",
+  "supports_noop": false,
+  "private": true,
+  "implementations": [
+    {
+      "name": "install_docker_linux.sh",
+      "requirements": [
+        "shell"
+      ]
+    },
+    {
+      "name": "install_docker_windows.ps1",
+      "requirements": [
+        "powershell"
+      ]
+    }
+  ],
+  "parameters": {
+    "os": {
+      "description": "Operation system",
+      "type": "String[1]"
+    },
+    "ostype": {
+      "description": "Type of the Linux system like Debian, Ubuntu, Redhat",
+      "type": "Enum['Debian', 'Ubuntu', 'Redhat']"
+    },
+    "removeold": {
+      "description": "Remove old docker packages before install new ones",
+      "type": "String[1]"
     }
   }
-  
+}
