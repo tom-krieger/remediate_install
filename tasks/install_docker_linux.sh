@@ -4,7 +4,7 @@ os=$PT_os
 type=$PT_ostype
 removeold=$PT_removeold
 
-echo "os = $os, type = $type"
+echo "docker installation for os = $os and type = $type"
 
 if [ "$os" = "Redhat" ] ; then
     # remove old docker installations
