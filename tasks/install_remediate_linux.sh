@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if [ ! -d "/opt/remediate" ] ; then
-    sudo mkdir -p /opt/remediate
-    sudo chmod 755 /opt/remediate
+if [ ! -d "${PT_install_dir}" ] ; then
+    sudo mkdir -p $PT_install_dir
+    sudo chmod 755 $PT_install_dir
 fi
 
-cd /opt/remediate
+cd $PT_install_dir
 
 if [ ! -f docker-compose.yml ] ; then
     echo "downloadind remediate compose file"
@@ -16,6 +16,6 @@ compose=$(sudo type docker-compose 2>/dev/null)
 if [ -z "$compose" ] ; then
     compose="/usr/local/bin/docker-compose"
 fi
-sudo $compose run remediate start --license-file $PT_license
+sudo $compose run remediate start --license-file $PT_license_file
 
 exit 0

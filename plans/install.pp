@@ -4,7 +4,9 @@ plan remediate_install::install (
   String[1] $remove_old,
   String[1] $init_swarm,
   String $license_file = undef,
-  String $compose_version = '1.24.1'
+  String $compose_version = '1.24.1',
+  String $win_install_dir = 'c:\remediate',
+  String $unix_install_dir = '/opt/remediate'
 ) {
 
   if(($install_docker != 'n') and ($install_docker != 'y')) {
@@ -62,6 +64,17 @@ plan remediate_install::install (
   run_task('remediate_install::install_docker_compose', $nodes, compose_version => $compose_version)
 
   # install remedeate
-  run_task('remediate_install::install_remediate', $nodes)
+  case $myfacts['kernel'] {
+    'Linux': {
+      $install_dir = $unix_install_dir
+    }
+    'Windows': {
+      $install_dir = $win_install_dir
+    }
+    default: {
+      fail_plan("unknown system kernel ${myfacts['kernel']}")
+    }
+  }
+  run_task('remediate_install::install_remediate', $nodes, license_file => $license_file, install_dir => $install_dir)
 
 }
