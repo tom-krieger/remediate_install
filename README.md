@@ -1,9 +1,9 @@
-# remediate_install
+# Module remediate_install
 
 ## Table of Contents
 
 1. [Description](#description)
-2. [System equiements](#system-equirements)
+2. [System requiements](#system-equirements)
 3. [Usage - Configuration options and additional functionality](#usage)
 4. [Limitations - OS compatibility, etc.](#limitations)
 5. [Development - Guide for contributing to the module](#development)
@@ -14,7 +14,7 @@ The module provides tasks and plans arround the installation of Puppet Remediate
 
 ## System requirements
 
-Remediate has its own system requirements. Before you begin to inxtall, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html) here.
+Remediate has its own system requirements. Before you begin to inxtall, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html) here. This module can check the systemrequirements and stop installation if the requirements are not met.
 
 ## License
 
@@ -30,8 +30,10 @@ Remediate needs a licensw fle to run. You can apply for a test license at [licen
 Include usage examples for common use cases in the **Usage** section. Show your users how to use your module to solve problems, and be sure to include code examples. Include three to five examples of the most important or common tasks a user can accomplish with your module. Show users how to accomplish more complex tasks that involve different types, classes, and functions working in tandem.
 
 ```puppet
-bolt plan run remediate_install::install install_docker=y init_swarm=y remove_old=y \
-        license_file=/opt/remediate/vr-license.json --nodes localhost --run-as root
+cd remediate_install
+bolt puppetfile install
+bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
+    remove_old=y install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root
 ```
 
 ## Reference

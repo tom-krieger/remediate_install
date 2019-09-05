@@ -1,0 +1,22 @@
+{
+    "description": "Check firewall is running",
+    "input_method": "environment",
+    "supports_noop": false,
+    "private": true,
+    "implementations": [
+      {
+        "name": "check_firewall_linux.sh",
+        "requirements": [
+          "shell"
+        ]
+      },
+      {
+        "name": "check_firewall_windows.ps1",
+        "requirements": [
+          "powershell"
+        ]
+      }
+    ],
+    "parameters": {
+    }
+  }

@@ -42,7 +42,7 @@ if [ "$os" = "Redhat" ] ; then
 elif [ "$os" = "Debian" -o "$os" = "Ubuntu" ] ; then
 
     # remove old docker installations
-    olgpkgs="docker docker-engine docker.io containerd runc"
+    oldpkgs="docker docker-engine docker.io containerd runc"
 
     newpkgs="apt-transport-https \
         ca-certificates \
