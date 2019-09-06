@@ -1,5 +1,5 @@
 {
-    "description": "Check firewall is running",
+    "description": "Check if firewall is running",
     "input_method": "environment",
     "supports_noop": false,
     "private": true,
