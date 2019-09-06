@@ -1,6 +1,6 @@
 # @summary Install Puppet Remediate
 #
-# Bolt plan to install Puppet remediate. 
+# Bolt plan to install Puppet Remediate. 
 #
 # @param $nodes
 #    The target nodes
@@ -55,20 +55,21 @@
 #    bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
 #              install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root \
 #              [--sudo-password [PASSWORD]]
+# This bolt plan 
 plan remediate_install (
   TargetSpec $nodes,
   String[1] $install_docker,
   String[1] $init_swarm,
   String[1] $install_compose,
   String[1] $install_remediate,
-  String[1] $configure_firewall = 'n',
-  String $license_file     = undef,
-  String $compose_version  = '1.24.1',
-  String $compose_install_path = '/usr/local/bin',
-  String $win_install_dir  = 'c:\remediate',
-  String $unix_install_dir = '/opt/remediate',
+  String[1] $configure_firewall        = 'n',
+  String $license_file                 = undef,
+  String $compose_version              = '1.24.1',
+  String $compose_install_path         = '/usr/local/bin',
+  String $win_install_dir              = 'c:\remediate',
+  String $unix_install_dir             = '/opt/remediate',
   Boolean $enforce_system_requirements = false,
-  Boolean $noop_mode = false,
+  Boolean $noop_mode                   = false,
 ) {
 
   if(($install_docker != 'n') and ($install_docker != 'y')) {
