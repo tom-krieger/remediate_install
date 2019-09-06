@@ -15,11 +15,13 @@
 
 ## Description
 
-The module provides tasks and plans arround the installation of Puppet Remediate. Remediate is shipped as a bunch of docker containers. 
+The module provides Bolt plans arround the installation of Puppet Remediate. Remediate is shipped as a bunch of docker containers. 
+
+The installation process needs several files from the internet. Puppet modules will be downloaded, Docker will be installed and docker-compose as well. Please make sure internet access is possible.
 
 ## System requirements
 
-Remediate has its own system requirements. Before you begin to install, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html) here. This module can check the system requirements and stop the installation if the requirements are not met.
+Remediate has its own system requirements. Before you begin to install, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html). This module can check the system requirements and stop the installation if the requirements are not met. Additionally there's a plan for checking only the requirements and printing log messaged if some requirements are not met.
 
 ## License
 
@@ -40,11 +42,11 @@ cd remediate_install
 bolt puppetfile install
 ```
 
-This step will install all needed Puppet modules into the remediate_install modules folder.
+This step will install all needed Puppet modules into the remediate_install modules folder. You can see which modules will be installed by having a look into the Puppetfile in the module.
 
 ## Usage
 
-This module contains two Bolt plans. One plan is for checking the system requirements only. The second one is for installing Remediate on your system.
+This module contains two Bolt plans. One plan is for simply checking the system requirements. The second plan is for installing Remediate on your system.
 
 ### Checking system requirements
 
@@ -56,9 +58,11 @@ bolt plan run remediate_install::check_requirements -n localhost
 
 ```puppet
 bolt plan run remediate_install install_docker=y init_swarm=y \
-    license_file=/opt/remediate/license.json install_compose=y \
+    license_file=/opt/remediate/my-remediate-license.json install_compose=y \
     install_remediate=y configure_firewall=y -n localhost --run-as root
 ```
+
+The installer will copy the license file into the Remediate installation directoy and will download the requierd docker compose file to fire up Remediate.
 
 ## Reference
 
@@ -68,13 +72,18 @@ See [REFERENCE.md](https://github.com/tom-krieger/sremediate_install/blob/master
 
 This first version is only tested with CentOS. More operation systems to follow.
 
+Currently there is no possibilty to use a proxy for internet access.
+
 ## Development
 
-Contributions are welcome in any form, pull requests, and issues should be filed via GitHub.
+Contributions are welcome in any form, pull requests and issues should be filed via GitHub.
 
 ## Changelog
 
 See [CHANGELOG.md](https://github.com/tom-krieger/remediate_install/blob/master/CHANGELOG.md)
 
-## Contributors
+## TODOs
 
+- Add options to configure prox access to the internet for downloading Docker, docker.compose, Remediaste compose file and so on
+
+## Contributors
