@@ -1,6 +1,8 @@
 # @summary
 #    Firewall post rules
-class remediate_install::firewall::linux::fw_post {
+#
+# Rules to be added at the end of the firewall
+class remediate_install::firewall::linux::post {
 
   firewall { '999 drop all':
     proto  => 'all',
