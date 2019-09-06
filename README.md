@@ -30,7 +30,7 @@ Remediate needs a license flle to run. You can apply for a test license at [lice
 - Click 'Get License'
 - Click '30-day Free Trial'
 - Download your license (json file)
-- Save your license to the directory where you plan to install Remediate
+- Save your license to the directory where the installer can access it
 
 ## Before you start
 
