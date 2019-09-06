@@ -137,7 +137,7 @@ plan remediate_install (
       }
     }
     'Windows':           {
-      if($myfacts['os']['release']['major'] == '10') {
+      if($myfacts['os']['release']['major'] != '10') {
         if($enforce_system_requirements) {
           fail_plan("Remediate is not supported on Windowa version ${myfacts['os']['releae']['major']}. It has to be at least 10.")
         } else {
