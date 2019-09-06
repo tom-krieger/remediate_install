@@ -3,8 +3,8 @@
 #
 class remediate_install::firewall::linux {
   Firewall {
-      before  => Class['remediate_install::firewall::linux::fw_post'],
-      require => Class['remediate_install::firewall::linux::fw_pre'],
+      before  => Class['remediate_install::firewall::linux::post'],
+      require => Class['remediate_install::firewall::linux::pre'],
     }
 
     class { 'firewall': }
