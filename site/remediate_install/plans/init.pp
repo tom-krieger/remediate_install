@@ -33,6 +33,9 @@
 #    The version of docker-compose to install if installation of docker-compose is requested. 
 #    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
 #
+# @param $compose_install_path
+#    Path where to install docker-compose binary 
+#
 # @param $win_install_dir
 #    Directory where to install Remediate on Windo´ws systems
 #
@@ -45,7 +48,7 @@
 # @param $noop_mode
 #    Run apply commands in noop mode. If set to true no changes will be made to the system
 #
-# @example
+# @example 
 #    bolt plan run remediate_install::check_requirements -n localhost
 #
 # @example
@@ -60,6 +63,7 @@ plan remediate_install (
   String[1] $configure_firewall = 'n',
   String $license_file     = undef,
   String $compose_version  = '1.24.1',
+  String $compose_install_path = '/usr/local/bin',
   String $win_install_dir  = 'c:\remediate',
   String $unix_install_dir = '/opt/remediate',
   Boolean $enforce_system_requirements = false,
@@ -166,12 +170,25 @@ plan remediate_install (
   # run installation
   if($install_docker == 'y') {
 
-    # install docker
-    out::message('istalling docker')
+    # install docker and additional rpm packages
+    out::message('installing docker')
     apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
       class { 'docker':
         docker_ee      => false,
         manage_package => true,
+        manage_service => true,
+      }
+
+      package { 'yum-utils':
+        ensure => installed,
+      }
+
+      package { 'device-mapper-persistent-data':
+        ensure => installed,
+      }
+
+      package {'lvm2':
+        ensure => installed
       }
     }
   }
@@ -191,14 +208,17 @@ plan remediate_install (
     out::message('install docker compose')
     apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
       class {'docker::compose':
-        ensure  => present,
-        version => $compose_version,
+        ensure       => present,
+        version      => $compose_version,
+        install_path => $compose_install_path,
       }
     }
+    $compose_path = $compose_install_path
+  } else {
+    $compose_path = ''
   }
 
   # configure firewall
-
   if($configure_firewall == 'y') {
     out::message('configuring firewall')
     $res = run_task('remediate_install::check_firewall', $nodes)
@@ -230,10 +250,13 @@ plan remediate_install (
       }
     }
 
+    out::message("installing Remediate in ${install_dir}")
+
     apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
       class { 'remediate_install::install':
         install_dir  => $install_dir,
-        license_file => $license_file
+        license_file => $license_file,
+        compose_dir  => $compose_path
       }
     }
   }

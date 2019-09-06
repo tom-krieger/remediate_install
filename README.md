@@ -6,10 +6,10 @@
 2. [System requiements](#system-equirements)
 3. [License](#öicense)
 4. [Before you start](#before-you-start)
-5. [Usage - Configuration options and additional functionality](#usage)
+5. [Usage](#usage)
 6. [Reference](#reference)
 7. [Limitations](#limitations)
-8. [Development - Guide for contributing to the module](#development)
+8. [Development](#development)
 9. [Changelog](#changelog)
 10. [Contributors](#contributors)
 
@@ -56,7 +56,7 @@ bolt plan run remediate_install::check_requirements -n localhost
 
 ```puppet
 bolt plan run remediate_install install_docker=y init_swarm=y \
-    license_file=/opt/remediate/license.json remove_old=y install_compose=y \
+    license_file=/opt/remediate/license.json install_compose=y \
     install_remediate=y configure_firewall=y -n localhost --run-as root
 ```
 

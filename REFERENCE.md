@@ -79,7 +79,7 @@ Data type: `String`
 
 
 
-Default value: ' https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml'
+Default value: 'https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml'
 
 ## Tasks
 
@@ -93,7 +93,22 @@ Check firewall is running
 
 ### remediate_install
 
-Bolt plan to install Puppet remediate
+Bolt plan to install Puppet remediate.
+
+#### Examples
+
+##### 
+
+```puppet
+bolt plan run remediate_install::check_requirements -n localhost
+```
+
+##### 
+
+```puppet
+bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
+remove_old=y install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root
+```
 
 #### Parameters
 
@@ -105,11 +120,59 @@ The target nodes
 
 ##### `$install_docker`
 
-Flag fpr Docker install. Valid input is 'y' or 'no'
+Flag fpr Docker install. Valid input: 'y' or 'no'
 
 ##### `$init_swarm`
 
-Initialize Docker Swarm during installation. This will initialize a first manager swarm node. Valid input is 'y' or 'n'
+Initialize Docker Swarm during installation. This will initialize a first manager swarm node.
+Valid input: 'y' or 'n'
+
+##### `$install_compose`
+
+Install docker-compose binary which is needed for Remediate installation. Valid input: 'y' or 'n'.
+
+##### `$compose_version`
+
+The version of docker-compose to install if installation of docker-compose is requested.
+Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
+
+##### `$install_remediate`
+
+Install Remediate. Valid input: 'y' or 'n'
+
+##### `$configure_firewall`
+
+Serup a firewall with all rules needed for Remediate. If unsure please set this parameter to no
+and do the firewall configuration yourself. Valid input: 'y' or 'n'
+
+##### `$license_file`
+
+Full qualified filename of teh Remediate license file.
+
+##### `$compose_version`
+
+The version of docker-compose to install if installation of docker-compose is requested.
+Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
+
+##### `$compose_install_path`
+
+Path where to install docker-compose binary
+
+##### `$win_install_dir`
+
+Directory where to install Remediate on Windo´ws systems
+
+##### `$unix_install_dir`
+
+Directory where to install Remediate on Unix systems
+
+##### `$enforce_system_requirements`
+
+Set to true the installer breaks if the system requirements for Remediate are not met.
+
+##### `$noop_mode`
+
+Run apply commands in noop mode. If set to true no changes will be made to the system
 
 ##### `nodes`
 
@@ -164,6 +227,14 @@ Data type: `String`
 
 
 Default value: '1.24.1'
+
+##### `compose_install_path`
+
+Data type: `String`
+
+
+
+Default value: '/usr/local/bin'
 
 ##### `win_install_dir`
 

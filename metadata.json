@@ -2,9 +2,9 @@
   "name": "tomkrieger-remediate_install",
   "version": "0.1.0",
   "author": "Thomas Krieger",
-  "summary": "",
+  "summary": "Remediate installer",
   "license": "Apache-2.0",
-  "source": "",
+  "source": "https://github.com/tom-krieger/remediate_install.git",
   "dependencies": [
 
   ],
@@ -24,6 +24,7 @@
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
+        "7",
         "8"
       ]
     },
@@ -36,12 +37,14 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
+        "8",
         "9"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
+        "14.04",
         "18.04"
       ]
     },
