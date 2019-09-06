@@ -48,12 +48,13 @@
 # @param $noop_mode
 #    Run apply commands in noop mode. If set to true no changes will be made to the system
 #
-# @example 
+# @example Requirements check
 #    bolt plan run remediate_install::check_requirements -n localhost
 #
-# @example
+# @example Remediate installation
 #    bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
-#    remove_old=y install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root 
+#              install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root \
+#              [--sudo-password [PASSWORD]]
 plan remediate_install (
   TargetSpec $nodes,
   String[1] $install_docker,
@@ -152,7 +153,7 @@ plan remediate_install (
   # check system meory
   if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
     if($enforce_system_requirements) {
-    fail_plan('System memory has to be not lower than 8 GB.')
+      fail_plan('System memory has to be not lower than 8 GB.')
     } else {
       crit('System memory has to be not lower than 8 GB.')
     }
@@ -167,50 +168,76 @@ plan remediate_install (
     }
   }
 
+  out::message('====================================================================')
+  out::message(' ')
+  out::message("Install docxker ............. : ${install_docker}")
+  out::message("Initialize docker swarm ..... : ${init_swarm}")
+  out::message("Install docker-comose ....... : ${install_compose}")
+  if($install_compose == 'y') {
+    out::message("Compose install directory ... : ${compose_install_path}")
+    out::message("Docker compose version ...... : ${compose_version}")
+  }
+  out::message("Install Remediate ........... : ${install_remediate}")
+  if($install_remediate == 'y') {
+    if($myfacts['kernel'] == 'Linux') {
+      out::message("Remediate install directory . : ${unix_install_dir}")
+    } elsif($myfacts['k4rnel'] == 'windows') {
+      out::message("Remediate install directory . : ${win_install_dir}")
+    }
+  }
+  out::message("Configure firewall .......... : ${configure_firewall}")
+  out::message("Noop mode ................... : ${noop_mode}")
+  out::message(' ')
+  out::message('====================================================================')
+
   # run installation
   if($install_docker == 'y') {
-
     # install docker and additional rpm packages
     out::message('installing docker')
-    apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-      class { 'docker':
-        docker_ee      => false,
-        manage_package => true,
-        manage_service => true,
-      }
+    without_default_logging() || {
+      apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        class { 'docker':
+          docker_ee      => false,
+          manage_package => true,
+          manage_service => true,
+        }
 
-      package { 'yum-utils':
-        ensure => installed,
-      }
+        package { 'yum-utils':
+          ensure => installed,
+        }
 
-      package { 'device-mapper-persistent-data':
-        ensure => installed,
-      }
+        package { 'device-mapper-persistent-data':
+          ensure => installed,
+        }
 
-      package {'lvm2':
-        ensure => installed
+        package {'lvm2':
+          ensure => installed
+        }
       }
     }
   }
 
   if($init_swarm == 'y') {
     out::message('install docker swarm')
-    apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-      docker::swarm {'swarm':
-        init => true,
+    without_default_logging() || {
+      apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        docker::swarm {'swarm':
+          init => true,
+        }
       }
     }
-
   }
 
   # check for docker compose and install if not present
   if($install_compose == 'y') {
     out::message('install docker compose')
-    apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-      class {'docker::compose':
-        ensure       => present,
-        version      => $compose_version,
-        install_path => $compose_install_path,
+    without_default_logging() || {
+      apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        class {'docker::compose':
+          ensure       => present,
+          version      => $compose_version,
+          install_path => $compose_install_path,
+        }
       }
     }
     $compose_path = $compose_install_path
@@ -221,18 +248,19 @@ plan remediate_install (
   # configure firewall
   if($configure_firewall == 'y') {
     out::message('configuring firewall')
-    $res = run_task('remediate_install::check_firewall', $nodes)
-    $fwd = $res.first
-    if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled')) {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-        class { 'remediate_install::firewall':
-          kernel => $myfacts['kernel'],
+    without_default_logging() || {
+      $res = run_task('remediate_install::check_firewall', $nodes)
+      $fwd = $res.first
+      if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled')) {
+          apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+          class { 'remediate_install::firewall':
+            kernel => $myfacts['kernel'],
+          }
         }
+      } else {
+        warning('No firewall running on host, no configuration will be done')
       }
-    } else {
-      warning('No firewall running on host, no configuration will be done')
     }
-
   }
 
   # install remedeate
@@ -252,11 +280,13 @@ plan remediate_install (
 
     out::message("installing Remediate in ${install_dir}")
 
-    apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-      class { 'remediate_install::install':
-        install_dir  => $install_dir,
-        license_file => $license_file,
-        compose_dir  => $compose_path
+    without_default_logging() || {
+      apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        class { 'remediate_install::install':
+          install_dir  => $install_dir,
+          license_file => $license_file,
+          compose_dir  => $compose_path
+        }
       }
     }
   }
