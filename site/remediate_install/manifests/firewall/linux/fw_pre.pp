@@ -1,6 +1,6 @@
 # @summary
 #    Firewall pre rules 
-class remediate_install::fw_pre {
+class remediate_install::firewall::linux::fw_pre {
 
   Firewall {
     require => undef,

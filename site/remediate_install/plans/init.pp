@@ -1,7 +1,59 @@
+# @summary Install Puppet Remediate
+#
+# Bolt plan to install Puppet remediate. 
+#
+# @param $nodes
+#    The target nodes
+#
+# @param $install_docker
+#    Flag fpr Docker install. Valid input: 'y' or 'no'
+#
+# @param $init_swarm
+#    Initialize Docker Swarm during installation. This will initialize a first manager swarm node. 
+#    Valid input: 'y' or 'n'
+#
+# @param $install_compose
+#    Install docker-compose binary which is needed for Remediate installation. Valid input: 'y' or 'n'.
+#
+# @param $compose_version
+#    The version of docker-compose to install if installation of docker-compose is requested. 
+#    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
+#
+# @param $install_remediate
+#    Install Remediate. Valid input: 'y' or 'n'
+#
+# @param $configure_firewall
+#    Serup a firewall with all rules needed for Remediate. If unsure please set this parameter to no 
+#    and do the firewall configuration yourself. Valid input: 'y' or 'n'
+#
+# @param $license_file
+#    Full qualified filename of teh Remediate license file. 
+#
+# @param $compose_version
+#    The version of docker-compose to install if installation of docker-compose is requested. 
+#    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
+#
+# @param $win_install_dir
+#    Directory where to install Remediate on Windo´ws systems
+#
+# @param $unix_install_dir
+#    Directory where to install Remediate on Unix systems
+#
+# @param $enforce_system_requirements
+#    Set to true the installer breaks if the system requirements for Remediate are not met.
+#
+# @param $noop_mode
+#    Run apply commands in noop mode. If set to true no changes will be made to the system
+#
+# @example
+#    bolt plan run remediate_install::check_requirements -n localhost
+#
+# @example
+#    bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
+#    remove_old=y install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root 
 plan remediate_install (
   TargetSpec $nodes,
   String[1] $install_docker,
-  String[1] $remove_old,
   String[1] $init_swarm,
   String[1] $install_compose,
   String[1] $install_remediate,
@@ -16,9 +68,6 @@ plan remediate_install (
 
   if(($install_docker != 'n') and ($install_docker != 'y')) {
     fail_plan("invalid value for install_docker parameter: ${install_docker}")
-  }
-  if(($remove_old != 'n') and ($remove_old != 'y')) {
-    fail_plan("invalid value for remove_old parameter: ${remove_old}")
   }
   if(($init_swarm != 'y') and ($init_swarm != 'n')) {
     fail_plan("Invalid value for init_swarm parameter: ${init_swarm}")
@@ -43,7 +92,6 @@ plan remediate_install (
   $myfacts = get_targets($nodes)[0].facts
 
   # check system requirements
-
   # check hardware platform
   if($myfacts['os']['hardware'] != 'x86_64') {
     if($enforce_system_requirements) {

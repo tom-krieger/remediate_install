@@ -5,31 +5,17 @@ class remediate_install::firewall(
   String $kernel,
 ) {
 
-  if($kernel == 'Linux') {
-    Firewall {
-      before  => Class['remediate_install::fw_post'],
-      require => Class['remediate_install::fw_pre'],
+  case $kernel {
+    'Linux': {
+      class { 'remediate_install::firewall::linux':
+      }
     }
-
-    class { 'firewall': }
-
-    firewallchain { 'OUTPUT:filter:IPv4':
-      ensure => present,
-      policy => accept,
-      before => undef,
+    'Windows': {
+      class { 'remediate_install::firewall::windows':
+      }
     }
-
-    firewall { '100 Allow inbound ssh':
-      chain  => 'INPUT',
-      dport  => 22,
-      proto  => tcp,
-      action => accept,
-    }
-
-    firewall { '101 Allow inbound Remediate console access':
-      dport  => 8443,
-      proto  => tcp,
-      action => accept,
+    default: {
+      crit("No firewall definition for ${kernel}")
     }
   }
 }
