@@ -7,19 +7,19 @@
 
 * [`remediate_install::firewall`](#remediate_installfirewall): Configure firewall if needed
 * [`remediate_install::firewall::linux`](#remediate_installfirewalllinux): Firewall definition for Linux
-* [`remediate_install::firewall::linux::fw_post`](#remediate_installfirewalllinuxfw_post): Firewall post rules
-* [`remediate_install::firewall::linux::fw_pre`](#remediate_installfirewalllinuxfw_pre): Firewall pre rules
+* [`remediate_install::firewall::linux::post`](#remediate_installfirewalllinuxpost): Firewall post rules
+* [`remediate_install::firewall::linux::pre`](#remediate_installfirewalllinuxpre): Firewall pre rules
 * [`remediate_install::firewall::windows`](#remediate_installfirewallwindows): Firewall definition for windows
 * [`remediate_install::install`](#remediate_installinstall): Install Puppet remedeiate docker containers
 
 **Tasks**
 
-* [`check_firewall`](#check_firewall): Check firewall is running
+* [`check_firewall`](#check_firewall): Check if firewall is running
 
 **Plans**
 
 * [`remediate_install`](#remediate_install): Install Puppet Remediate
-* [`remediate_install::check_requirements`](#remediate_installcheck_requirements): 
+* [`remediate_install::check_requirements`](#remediate_installcheck_requirements): Check Remediate installation prerequiasites
 
 ## Classes
 
@@ -31,6 +31,10 @@ Configure firewall if needed
 
 The following parameters are available in the `remediate_install::firewall` class.
 
+##### `$kernel`
+
+The os kernel like Linux or Windows
+
 ##### `kernel`
 
 Data type: `String`
@@ -41,13 +45,13 @@ Data type: `String`
 
 Firewall definition for Linux
 
-### remediate_install::firewall::linux::fw_post
+### remediate_install::firewall::linux::post
 
-Firewall post rules
+Rules to be added at the end of the firewall
 
-### remediate_install::firewall::linux::fw_pre
+### remediate_install::firewall::linux::pre
 
-Firewall pre rules
+Firewall rules to be added at the top of the ruleset
 
 ### remediate_install::firewall::windows
 
@@ -55,11 +59,24 @@ Firewall definition for windows
 
 ### remediate_install::install
 
-Install Puppet remedeiate docker containers
+@$compose_url
+   URL of the Remediar docker compose file
 
 #### Parameters
 
 The following parameters are available in the `remediate_install::install` class.
+
+##### `$install_dir`
+
+Directory where to install Remediate
+
+##### `$license_file`
+
+Full qualified filename of the license file including path
+
+##### `$compose_dir`
+
+Directory where to install docker-compose binary
 
 ##### `install_dir`
 
@@ -73,6 +90,14 @@ Data type: `String`
 
 
 
+##### `compose_dir`
+
+Data type: `String`
+
+
+
+Default value: ''
+
 ##### `compose_url`
 
 Data type: `String`
@@ -85,7 +110,7 @@ Default value: 'https://storage.googleapis.com/remediate/stable/latest/docker-co
 
 ### check_firewall
 
-Check firewall is running
+Check if firewall is running
 
 **Supports noop?** false
 
@@ -97,17 +122,18 @@ Bolt plan to install Puppet remediate.
 
 #### Examples
 
-##### 
+##### Requirements check
 
 ```puppet
 bolt plan run remediate_install::check_requirements -n localhost
 ```
 
-##### 
+##### Remediate installation
 
 ```puppet
 bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
-remove_old=y install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root
+          install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root \
+          [--sudo-password [PASSWORD]]
 ```
 
 #### Parameters
@@ -270,11 +296,15 @@ Default value: `false`
 
 ### remediate_install::check_requirements
 
-The remediate_install::check_requirements class.
+Check Remediate installation prerequiasites
 
 #### Parameters
 
 The following parameters are available in the `remediate_install::check_requirements` plan.
+
+##### `$nodes`
+
+Nodes to run on
 
 ##### `nodes`
 

@@ -1,3 +1,9 @@
+# @summary
+#    Check Remediate installation prerequiasites
+#
+# @param $nodes
+#    Nodes to run on
+#
 plan remediate_install::check_requirements (
   TargetSpec $nodes,
 ) {

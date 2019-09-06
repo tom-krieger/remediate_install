@@ -1,6 +1,8 @@
 # @summary
 #    Configure firewall if needed
 #
+# @param $kernel
+#    The os kernel like Linux or Windows
 class remediate_install::firewall(
   String $kernel,
 ) {
