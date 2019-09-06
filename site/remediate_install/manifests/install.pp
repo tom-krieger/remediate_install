@@ -16,8 +16,8 @@
 class remediate_install::install (
   String $install_dir,
   String $license_file,
-  String $compose_dir = '',
-  String $compose_url = 'https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml',
+  String $compose_dir   = '',
+  String $compose_url   = 'https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml',
 ) {
 
   if($compose_dir == '') {

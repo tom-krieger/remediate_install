@@ -2,6 +2,7 @@
 #    Firewall definition for Linux
 #
 class remediate_install::firewall::linux {
+
   Firewall {
       before  => Class['remediate_install::firewall::linux::post'],
       require => Class['remediate_install::firewall::linux::pre'],
