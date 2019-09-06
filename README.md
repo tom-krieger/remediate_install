@@ -23,7 +23,7 @@ Remediate has its own system requirements. Before you begin to install, please c
 
 ## License
 
-Remediate needs a license fle to run. You can apply for a test license at [licenses.puppet.com](https://licenses.puppet.com). To get a license please follow these instructions:
+Remediate needs a license flle to run. You can apply for a test license at [licenses.puppet.com](https://licenses.puppet.com). To get a license please follow these instructions:
 
 - Click 'Get License'
 - Click '30-day Free Trial'
@@ -40,6 +40,8 @@ cd remediate_install
 bolt puppetfile install
 ```
 
+This step will install all needed Puppet modules into the remediate_install modules folder.
+
 ## Usage
 
 This module contains two Bolt plans. One plan is for checking the system requirements only. The second one is for installing Remediate on your system.
@@ -53,8 +55,9 @@ bolt plan run remediate_install::check_requirements -n localhost
 ### Installing remediate
 
 ```puppet
-bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
-    remove_old=y install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root
+bolt plan run remediate_install install_docker=y init_swarm=y \
+    license_file=/opt/remediate/license.json remove_old=y install_compose=y \
+    install_remediate=y configure_firewall=y -n localhost --run-as root
 ```
 
 ## Reference
