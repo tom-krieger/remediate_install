@@ -44,7 +44,8 @@ plan remediate_install::check_requirements (
   }
 
   # check system meory
-  if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
+  $mem = $myfacts['memorysize_mb'] * 1024 *1024
+  if($mem < 8589934592) {
     crit('System memory has to be not lower than 8 GB.')
   }
 

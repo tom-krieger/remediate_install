@@ -152,7 +152,8 @@ plan remediate_install (
   }
 
   # check system meory
-  if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
+  $mem = $myfacts['memorysize_mb'] * 1024 *1024
+  if($mem < 8589934592) {
     if($enforce_system_requirements) {
       fail_plan('System memory has to be not lower than 8 GB.')
     } else {
