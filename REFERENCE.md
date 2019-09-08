@@ -124,18 +124,27 @@ This bolt plan
 
 #### Examples
 
+##### Upload license file
+
+```puppet
+bolt file upload /tmp/license.json /tmp/vr-license.json -n <host> --user <user> \
+          [--private_key <path to privare-key>] [--password] --no-host-key-check
+```
+
 ##### Requirements check
 
 ```puppet
-bolt plan run remediate_install::check_requirements -n localhost
+bolt plan run remediate_install::check_requirements -n <host> --run-as root --user <user> \
+          [--private_key <path to privare-key>] [--password] --no-host-key-check
 ```
 
 ##### Remediate installation
 
 ```puppet
-bolt plan run remediate_install install_docker=y init_swarm=y license_file=/opt/remediate/vr-license.json \
-          install_compose=y install_remediate=y configure_firewall=y -n localhost --run-as root \
-          [--sudo-password [PASSWORD]]
+bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/license.json \
+      install_compose=y install_remediate=y configure_firewall=y -n <host> --run-as root \
+      --user <user> [--private_key <path to privare-key>] [--password] --no-host-key-check \
+      [--sudo-password [PASSWORD]]
 ```
 
 #### Parameters

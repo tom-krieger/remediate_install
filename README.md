@@ -40,6 +40,10 @@ Clone this module from [Github](https://github.com/tom-krieger/remediate_install
 cd remediate_install
 
 bolt puppetfile install
+
+# upload your license
+bolt file upload /tmp/license.json /tmp/vr-license.json -n <host> --user <user> \
+          [--private_key <path to privare-key>] [--password] --no-host-key-check
 ```
 
 This step will install all needed Puppet modules into the remediate_install modules folder. You can see which modules will be installed by having a look into the Puppetfile in the module.
@@ -51,7 +55,8 @@ This module contains two Bolt plans. One plan is for simply checking the system 
 ### Checking system requirements
 
 ```puppet
-bolt plan run remediate_install::check_requirements -n localhost
+bolt plan run remediate_install::check_requirements -n <host> --run-as root --user <user> \
+          [--private_key <path to privare-key>] [--password] --no-host-key-check
 ```
 
 ### Installing remediate
@@ -60,6 +65,10 @@ bolt plan run remediate_install::check_requirements -n localhost
 bolt plan run remediate_install install_docker=y init_swarm=y \
     license_file=/opt/remediate/my-remediate-license.json install_compose=y \
     install_remediate=y configure_firewall=y -n localhost --run-as root
+
+bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/license.json \
+          install_compose=y install_remediate=y configure_firewall=y -n <host> --run-as root \
+          --user <user> [--private_key <path to privare-key>] [--password] --no-host-key-check
 ```
 
 The installer will copy the license file into the Remediate installation directoy and will download the requierd docker compose file to fire up Remediate.
