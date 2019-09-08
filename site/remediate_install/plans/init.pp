@@ -29,6 +29,9 @@
 # @param $license_file
 #    Full qualified filename of teh Remediate license file. 
 #
+# @param Array $docker_users
+#    Users to add to the docker group
+#
 # @param $compose_version
 #    The version of docker-compose to install if installation of docker-compose is requested. 
 #    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
@@ -64,6 +67,7 @@ plan remediate_install (
   String[1] $install_remediate,
   String[1] $configure_firewall        = 'n',
   String $license_file                 = undef,
+  Array $docker_users                  = ['centos'],
   String $compose_version              = '1.24.1',
   String $compose_install_path         = '/usr/local/bin',
   String $win_install_dir              = 'c:\remediate',
@@ -200,6 +204,7 @@ plan remediate_install (
           docker_ee      => false,
           manage_package => true,
           manage_service => true,
+          docker_users   => $docker_users,
         }
 
         package { 'yum-utils':

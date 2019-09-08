@@ -118,7 +118,9 @@ Check if firewall is running
 
 ### remediate_install
 
-Bolt plan to install Puppet remediate.
+Bolt plan to install Puppet Remediate.
+
+This bolt plan
 
 #### Examples
 
@@ -174,6 +176,11 @@ and do the firewall configuration yourself. Valid input: 'y' or 'n'
 ##### `$license_file`
 
 Full qualified filename of teh Remediate license file.
+
+##### `Array`
+
+$docker_users
+Users to add to the docker group
 
 ##### `$compose_version`
 
@@ -245,6 +252,14 @@ Data type: `String`
 
 
 Default value: `undef`
+
+##### `docker_users`
+
+Data type: `Array`
+
+
+
+Default value: ['centos']
 
 ##### `compose_version`
 
