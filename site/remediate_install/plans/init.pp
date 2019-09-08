@@ -99,13 +99,12 @@ plan remediate_install (
 
   # check system requirements
   # check hardware platform
-  if(if($myfacts['hardwaremodel'] != 'x86_64') {
+  if($myfacts['hardwaremodel'] != 'x86_64') {
     if($enforce_system_requirements) {
       fail_plan("Remediate is not supported on ${myfacts['hardwaremodel']} hardware")
     } else {
       crit("Remediate is not supported on ${myfacts['hardwaremodel']} hardware")
     }
-
   }
 
   # check os version
