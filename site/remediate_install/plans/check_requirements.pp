@@ -12,7 +12,7 @@ plan remediate_install::check_requirements (
 
   # check system requirements
   # check hardware platform
-  if($myfacts['os']['hardware'] != 'x86_64') {
+  if($myfacts['hardwaremodel'] != 'x86_64') {
     crit("Remediate is not supported on ${myfacts['os']['name']} hardware")
   }
 
@@ -44,8 +44,7 @@ plan remediate_install::check_requirements (
   }
 
   # check system meory
-  $mem = $myfacts['memorysize_mb'] * 1024 *1024
-  if($mem < 8589934592) {
+  if($myfacts['memorysize_mb'] < '8192') {
     crit('System memory has to be not lower than 8 GB.')
   }
 

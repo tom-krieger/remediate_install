@@ -99,7 +99,7 @@ plan remediate_install (
 
   # check system requirements
   # check hardware platform
-  if($myfacts['os']['hardware'] != 'x86_64') {
+  if(if($myfacts['hardwaremodel'] != 'x86_64') {
     if($enforce_system_requirements) {
       fail_plan("Remediate is not supported on ${myfacts['os']['name']} hardware")
     } else {
@@ -152,8 +152,7 @@ plan remediate_install (
   }
 
   # check system meory
-  $mem = $myfacts['memorysize_mb'] * 1024 *1024
-  if($mem < 8589934592) {
+  if($myfacts['memorysize_mb'] < '8192') {
     if($enforce_system_requirements) {
       fail_plan('System memory has to be not lower than 8 GB.')
     } else {
