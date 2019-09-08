@@ -101,14 +101,14 @@ plan remediate_install (
   # check hardware platform
   if(if($myfacts['hardwaremodel'] != 'x86_64') {
     if($enforce_system_requirements) {
-      fail_plan("Remediate is not supported on ${myfacts['os']['name']} hardware")
+      fail_plan("Remediate is not supported on ${myfacts['hardwaremodel']} hardware")
     } else {
-      crit("Remediate is not supported on ${myfacts['os']['name']} hardware")
+      crit("Remediate is not supported on ${myfacts['hardwaremodel']} hardware")
     }
 
   }
 
-  # check os version and
+  # check os version
   case $myfacts['os']['name'] {
     'RedHat', 'CentOS':  {
       if($myfacts['os']['release']['major'] < '7') {
@@ -151,7 +151,7 @@ plan remediate_install (
     }
   }
 
-  # check system meory
+  # check system memory
   if($myfacts['memorysize_mb'] < '8192') {
     if($enforce_system_requirements) {
       fail_plan('System memory has to be not lower than 8 GB.')
