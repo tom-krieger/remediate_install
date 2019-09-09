@@ -56,7 +56,7 @@ plan remediate_install::check_requirements (
 
     # check system meory
     if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
-      crit('System memory has to be not lower than 8 GB.')
+      crit('System memory has to be at least 8 GB.')
     }
 
     # check cpu count
