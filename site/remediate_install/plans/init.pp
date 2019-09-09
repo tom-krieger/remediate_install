@@ -164,7 +164,7 @@ plan remediate_install (
     out::message(' ')
     out::message('====================================================================')
     out::message(' ')
-    out::message("Install docxker ............. : ${install_docker}")
+    out::message("Install docker .............. : ${install_docker}")
     out::message("     -> docker ee ........... : ${docker_ee}")
     out::message("Initialize docker swarm ..... : ${init_swarm}")
     out::message("Install docker-comose ....... : ${install_compose}")
