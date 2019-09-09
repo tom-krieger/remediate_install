@@ -16,6 +16,8 @@ _Private Classes_
 * `remediate_install::firewall::linux::pre`: Firewall pre rules
 * `remediate_install::firewall::windows`: Firewall definition for windows
 * `remediate_install::install`: Install Puppet remedeiate docker containers
+* `remediate_install::install::linux`: Install remediate oin Linux
+* `remediate_install::install::windows`: Install remediate on windows
 
 **Tasks**
 
@@ -108,9 +110,8 @@ and do the firewall configuration yourself. Valid input: 'y' or 'n'
 
 Full qualified filename of teh Remediate license file.
 
-##### `Array`
+##### `$docker_users`
 
-$docker_users
 Users to add to the docker group
 
 ##### `$compose_version`
@@ -124,7 +125,7 @@ Path where to install docker-compose binary
 
 ##### `$win_install_dir`
 
-Directory where to install Remediate on Windo´ws systems
+Directory where to install Remediate on Windows boxes
 
 ##### `$unix_install_dir`
 
@@ -138,6 +139,10 @@ Set to true the installer breaks if the system requirements for Remediate are no
 
 Run apply commands in noop mode. If set to true no changes will be made to the system
 
+##### `$docker_ee`
+
+Flag to install Docker Enterprise. Must be set to true on Windows boxes.
+
 ##### `nodes`
 
 Data type: `TargetSpec`
@@ -146,31 +151,31 @@ Data type: `TargetSpec`
 
 ##### `install_docker`
 
-Data type: `String[1]`
+Data type: `Enum['y', 'n']`
 
 
 
 ##### `init_swarm`
 
-Data type: `String[1]`
+Data type: `Enum['y', 'n']`
 
 
 
 ##### `install_compose`
 
-Data type: `String[1]`
+Data type: `Enum['y', 'n']`
 
 
 
 ##### `install_remediate`
 
-Data type: `String[1]`
+Data type: `Enum['y', 'n']`
 
 
 
 ##### `configure_firewall`
 
-Data type: `String[1]`
+Data type: `Enum['y', 'n']`
 
 
 
@@ -214,7 +219,7 @@ Data type: `String`
 
 
 
-Default value: 'c:\remediate'
+Default value: 'C:/Users/Administrator/remediate'
 
 ##### `unix_install_dir`
 
@@ -233,6 +238,14 @@ Data type: `Boolean`
 Default value: `false`
 
 ##### `noop_mode`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `docker_ee`
 
 Data type: `Boolean`
 

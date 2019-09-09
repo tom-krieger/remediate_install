@@ -47,6 +47,10 @@ bolt puppetfile install
 # upload your Remediate license to remote host
 bolt file upload /tmp/license.json /tmp/license.json -n <host> --user <user> \
           [--private_key <private key file>] [--password] --no-host-key-check
+
+# Windows box
+bolt file upload /tmp/license.json c:\license.json -n <host> \
+          --user Administrator --password <password> --transport winrm --no-ssl
 ```
 
 This step will install all needed Puppet modules into the remediate_install modules folder. You can see which modules will be installed by having a look into the Puppetfile in the module.
@@ -69,7 +73,7 @@ bolt plan run remediate_install::check_requirements -n <host> --user Administrat
 
 ### Installing Remediate
 
-*Unix systems*
+#### Unix systems
 ```puppet
 bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/license.json \
           install_compose=y install_remediate=y configure_firewall=y -n <host> --run-as root \
@@ -77,11 +81,13 @@ bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/
           [--sudo-password [PASSWORD]]
 ````
 
-*Windows systems*
+#### Windows systems
+
 ```puppet
-bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/license.json \
+bolt plan run remediate_install install_docker=y docker_ee=true init_swarm=y \
+          license_file=c:\license.json \
           install_compose=y install_remediate=y configure_firewall=y -n <host> --no-ssl \
-          --userAdministrator --password <password> --transport winrm
+          --user Administrator --password <password> --transport winrm
 ```
 
 The installer will copy the license file into the Remediate installation directoy and will download the requierd docker compose file to fire up Remediate.
