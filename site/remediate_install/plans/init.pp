@@ -29,7 +29,7 @@
 # @param $license_file
 #    Full qualified filename of teh Remediate license file. 
 #
-# @param Array $docker_users
+# @param $docker_users
 #    Users to add to the docker group
 #
 # @param $compose_version
@@ -40,7 +40,7 @@
 #    Path where to install docker-compose binary 
 #
 # @param $win_install_dir
-#    Directory where to install Remediate on Windo´ws systems
+#    Directory where to install Remediate on Windows boxes
 #
 # @param $unix_install_dir
 #    Directory where to install Remediate on Unix systems
@@ -50,6 +50,9 @@
 #
 # @param $noop_mode
 #    Run apply commands in noop mode. If set to true no changes will be made to the system
+#
+# @param $docker_ee
+#    Flag to install Docker Enterprise. Must be set to true on Windows boxes.
 #
 # @example Upload license file
 #    bolt file upload /tmp/license.json /tmp/vr-license.json -n <host> --user <user> \
@@ -66,36 +69,23 @@
 # This bolt plan 
 plan remediate_install (
   TargetSpec $nodes,
-  String[1] $install_docker,
-  String[1] $init_swarm,
-  String[1] $install_compose,
-  String[1] $install_remediate,
-  String[1] $configure_firewall        = 'n',
+  # String[1] $install_docker,
+  Enum['y', 'n'] $install_docker,
+  Enum['y', 'n'] $init_swarm,
+  Enum['y', 'n'] $install_compose,
+  Enum['y', 'n'] $install_remediate,
+  Enum['y', 'n'] $configure_firewall   = 'n',
   String $license_file                 = undef,
   Array $docker_users                  = ['centos'],
   String $compose_version              = '1.24.1',
   String $compose_install_path         = '/usr/local/bin',
-  String $win_install_dir              = 'c:\remediate',
+  String $win_install_dir              = 'C:/Users/Administrator/remediate',
   String $unix_install_dir             = '/opt/remediate',
-  Boolean $enforce_system_requirements = false,
+  Boolean $enforce_system_requirements = true,
   Boolean $noop_mode                   = false,
+  Boolean $docker_ee                   = false,
 ) {
   get_targets($nodes).each |$target| {
-    if(($install_docker != 'n') and ($install_docker != 'y')) {
-      fail_plan("invalid value for install_docker parameter: ${install_docker}")
-    }
-    if(($init_swarm != 'y') and ($init_swarm != 'n')) {
-      fail_plan("Invalid value for init_swarm parameter: ${init_swarm}")
-    }
-    if(($install_compose != 'n') and ($install_compose != 'y')) {
-      fail_plan("Invalid value for install_compose: ${install_compose}")
-    }
-    if(($install_remediate != 'n') and ($install_remediate != 'y')) {
-      fail_plan("Invalid value for install_compose: ${install_remediate}")
-    }
-    if(($configure_firewall != 'n') and ($configure_firewall != 'y')) {
-      fail_plan("Invalid value for install_compose: ${configure_firewall}")
-    }
 
     $target.apply_prep()
     $myfacts = facts($target)
@@ -142,9 +132,9 @@ plan remediate_install (
       'Windows':           {
         if($myfacts['os']['release']['major'] != '10') {
           if($enforce_system_requirements) {
-            fail_plan("Remediate is not supported on Windowa version ${myfacts['os']['releae']['major']}. It has to be at least 10.")
+            fail_plan("Remediate is not supported on Windowa version ${myfacts['os']['release']['major']}. It has to be at least 10.")
           } else {
-            crit("Remediate is not supported on Windowa version ${myfacts['os']['releae']['major']}. It has to be at least 10.")
+            crit("Remediate is not supported on Windowa version ${myfacts['os']['release']['major']}. It has to be at least 10.")
           }
         }
       }
@@ -156,9 +146,9 @@ plan remediate_install (
     # check system memory
     if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
       if($enforce_system_requirements) {
-        fail_plan('System memory has to be not lower than 8 GB.')
+        fail_plan('System memory has to be at least 8 GB.')
       } else {
-        crit('System memory has to be not lower than 8 GB.')
+        crit('System memory has to be at least 8 GB.')
       }
     }
 
@@ -171,9 +161,11 @@ plan remediate_install (
       }
     }
 
+    out::message(' ')
     out::message('====================================================================')
     out::message(' ')
     out::message("Install docxker ............. : ${install_docker}")
+    out::message("     -> docker ee ........... : ${docker_ee}")
     out::message("Initialize docker swarm ..... : ${init_swarm}")
     out::message("Install docker-comose ....... : ${install_compose}")
     if($install_compose == 'y') {
@@ -190,8 +182,10 @@ plan remediate_install (
     }
     out::message("Configure firewall .......... : ${configure_firewall}")
     out::message("Noop mode ................... : ${noop_mode}")
+    out::message("Enforce system requirements . : ${enforce_system_requirements}")
     out::message(' ')
     out::message('====================================================================')
+    out::message(' ')
 
     # run installation
     if($install_docker == 'y') {
@@ -200,29 +194,31 @@ plan remediate_install (
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           class { 'docker':
-            docker_ee      => false,
+            docker_ee      => $docker_ee,
             manage_package => true,
             manage_service => true,
             docker_users   => $docker_users,
           }
 
-          package { 'yum-utils':
-            ensure => installed,
-          }
+          if($myfacts['kernel'] != 'Windows') {
+            package { 'yum-utils':
+              ensure => installed,
+            }
 
-          package { 'device-mapper-persistent-data':
-            ensure => installed,
-          }
+            package { 'device-mapper-persistent-data':
+              ensure => installed,
+            }
 
-          package {'lvm2':
-            ensure => installed
+            package {'lvm2':
+              ensure => installed
+            }
           }
         }
       }
     }
 
     if($init_swarm == 'y') {
-      out::message('install docker swarm')
+      out::message('initialize docker swarm')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           docker::swarm {'swarm':
@@ -237,10 +233,17 @@ plan remediate_install (
       out::message('install docker compose')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-          class {'docker::compose':
-            ensure       => present,
-            version      => $compose_version,
-            install_path => $compose_install_path,
+          if($myfacts['kernel'] == 'Windows') {
+            class {'docker::compose':
+              ensure  => present,
+              version => $compose_version,
+            }
+          } else {
+            class {'docker::compose':
+              ensure       => present,
+              version      => $compose_version,
+              install_path => $compose_install_path,
+            }
           }
         }
       }
@@ -253,17 +256,26 @@ plan remediate_install (
     if($configure_firewall == 'y') {
       out::message('configuring firewall')
       without_default_logging() || {
-        $res = run_task('remediate_install::check_firewall', $nodes)
-        $fwd = $res.first
-        if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled')) {
+        if($myfacts['kernel'] == 'Linux') {
+          $res = run_task('remediate_install::check_firewall', $nodes)
+          $fwd = $res.first
+          if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled')) {
             apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+              class { 'remediate_install::firewall':
+                kernel => $myfacts['kernel'],
+              }
+            }
+          } else {
+            warning('No firewall running on host, no configuration will be done')
+          }
+        } elsif($myfacts['kernel'] == 'Windows') {
+          apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
             class { 'remediate_install::firewall':
               kernel => $myfacts['kernel'],
             }
           }
-        } else {
-          warning('No firewall running on host, no configuration will be done')
         }
+
       }
     }
 
@@ -289,7 +301,8 @@ plan remediate_install (
           class { 'remediate_install::install':
             install_dir  => $install_dir,
             license_file => $license_file,
-            compose_dir  => $compose_path
+            compose_dir  => $compose_path,
+            kernel       => $myfacts['kernel'],
           }
         }
       }
