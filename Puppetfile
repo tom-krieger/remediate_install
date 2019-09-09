@@ -8,3 +8,8 @@ mod 'puppetlabs-firewall', '2.0.0'
 mod 'puppet-windows_firewall', '2.0.2'
 mod 'puppetlabs-registry', '2.1.0'
 mod 'puppet-archive', '4.2.0'
+
+mod 'remediate_install',
+  :git => 'https://github.com/tom-krieger/remediate_install.git',
+  :ref => 'feature/refactor_for_pdk'
+  
