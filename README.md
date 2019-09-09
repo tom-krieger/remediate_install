@@ -17,11 +17,13 @@
 
 The module provides Bolt plans arround the installation of Puppet Remediate. Remediate is shipped as a bunch of docker containers. 
 
-The installation process needs several files from the internet. Puppet modules will be downloaded, Docker will be installed and docker-compose as well. Please make sure internet access is possible.
+The installation process needs several files from the internet. Puppet modules will be downloaded, Docker will be installed and docker-compose as well. Please make sure internet access is possible on your computer running the Bolt plan and on the server installing Remediate.
 
 ## System requirements
 
 Remediate has its own system requirements. Before you begin to install, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html). This module can check the system requirements and stop the installation if the requirements are not met. Additionally there's a plan for checking only the requirements and printing log messaged if some requirements are not met.
+
+Bolt uses winrm transport to connect to the Windows boxes. Please make sure the Windows boxes have winrm enabled and firewalls are configured to grant access to the winrm ports on the Windows boxes.
 
 ## License
 
@@ -39,9 +41,10 @@ Clone this module from [Github](https://github.com/tom-krieger/remediate_install
 ```puppet
 cd remediate_install
 
+# install all Puppet modules needed
 bolt puppetfile install
 
-# upload your license to remote host
+# upload your Remediate license to remote host
 bolt file upload /tmp/license.json /tmp/license.json -n <host> --user <user> \
           [--private_key <private key file>] [--password] --no-host-key-check
 ```
@@ -55,17 +58,30 @@ This module contains two Bolt plans. One plan is for simply checking the system 
 ### Checking system requirements
 
 ```puppet
+# Unix
 bolt plan run remediate_install::check_requirements -n <host> --run-as root --user <user> \
           [--private_key <path to privare-key>] [--password] --no-host-key-check
+
+# Windows
+bolt plan run remediate_install::check_requirements -n <host> --user Administrator \
+           --password <password> --transport winrm --no-ssl
 ```
 
-### Installing remediate
+### Installing Remediate
 
+*Unix systems*
 ```puppet
 bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/license.json \
           install_compose=y install_remediate=y configure_firewall=y -n <host> --run-as root \
           --user <user> [--private_key <path to privare-key>] [--password] --no-host-key-check \
           [--sudo-password [PASSWORD]]
+````
+
+*Windows systems*
+```puppet
+bolt plan run remediate_install install_docker=y init_swarm=y license_file=/tmp/license.json \
+          install_compose=y install_remediate=y configure_firewall=y -n <host> --no-ssl \
+          --userAdministrator --password <password> --transport winrm
 ```
 
 The installer will copy the license file into the Remediate installation directoy and will download the requierd docker compose file to fire up Remediate.
