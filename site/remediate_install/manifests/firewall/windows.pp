@@ -1,6 +1,7 @@
 # @summary
 #    Firewall definition for windows
 #
+# @api private
 class remediate_install::firewall::windows {
 
   class { 'windows_firewall': ensure => 'running' }

@@ -3,6 +3,8 @@
 #
 # @param $kernel
 #    The os kernel like Linux or Windows
+#
+# @api private
 class remediate_install::firewall(
   String $kernel,
 ) {

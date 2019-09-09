@@ -2,6 +2,8 @@
 #    Firewall pre rules 
 #
 # Firewall rules to be added at the top of the ruleset
+#
+# @api private
 class remediate_install::firewall::linux::pre {
 
   Firewall {

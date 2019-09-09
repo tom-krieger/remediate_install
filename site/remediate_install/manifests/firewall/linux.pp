@@ -1,6 +1,7 @@
 # @summary
 #    Firewall definition for Linux
 #
+# @api private
 class remediate_install::firewall::linux {
 
   Firewall {

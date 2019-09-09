@@ -5,12 +5,17 @@
 
 **Classes**
 
-* [`remediate_install::firewall`](#remediate_installfirewall): Configure firewall if needed
-* [`remediate_install::firewall::linux`](#remediate_installfirewalllinux): Firewall definition for Linux
-* [`remediate_install::firewall::linux::post`](#remediate_installfirewalllinuxpost): Firewall post rules
-* [`remediate_install::firewall::linux::pre`](#remediate_installfirewalllinuxpre): Firewall pre rules
-* [`remediate_install::firewall::windows`](#remediate_installfirewallwindows): Firewall definition for windows
-* [`remediate_install::install`](#remediate_installinstall): Install Puppet remedeiate docker containers
+_Public Classes_
+
+
+_Private Classes_
+
+* `remediate_install::firewall`: Configure firewall if needed
+* `remediate_install::firewall::linux`: Firewall definition for Linux
+* `remediate_install::firewall::linux::post`: Firewall post rules
+* `remediate_install::firewall::linux::pre`: Firewall pre rules
+* `remediate_install::firewall::windows`: Firewall definition for windows
+* `remediate_install::install`: Install Puppet remedeiate docker containers
 
 **Tasks**
 
@@ -22,89 +27,6 @@
 * [`remediate_install::check_requirements`](#remediate_installcheck_requirements): Check Remediate installation prerequiasites
 
 ## Classes
-
-### remediate_install::firewall
-
-Configure firewall if needed
-
-#### Parameters
-
-The following parameters are available in the `remediate_install::firewall` class.
-
-##### `$kernel`
-
-The os kernel like Linux or Windows
-
-##### `kernel`
-
-Data type: `String`
-
-
-
-### remediate_install::firewall::linux
-
-Firewall definition for Linux
-
-### remediate_install::firewall::linux::post
-
-Rules to be added at the end of the firewall
-
-### remediate_install::firewall::linux::pre
-
-Firewall rules to be added at the top of the ruleset
-
-### remediate_install::firewall::windows
-
-Firewall definition for windows
-
-### remediate_install::install
-
-@$compose_url
-   URL of the Remediar docker compose file
-
-#### Parameters
-
-The following parameters are available in the `remediate_install::install` class.
-
-##### `$install_dir`
-
-Directory where to install Remediate
-
-##### `$license_file`
-
-Full qualified filename of the license file including path
-
-##### `$compose_dir`
-
-Directory where to install docker-compose binary
-
-##### `install_dir`
-
-Data type: `String`
-
-
-
-##### `license_file`
-
-Data type: `String`
-
-
-
-##### `compose_dir`
-
-Data type: `String`
-
-
-
-Default value: ''
-
-##### `compose_url`
-
-Data type: `String`
-
-
-
-Default value: 'https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml'
 
 ## Tasks
 
@@ -321,6 +243,22 @@ Default value: `false`
 ### remediate_install::check_requirements
 
 Check Remediate installation prerequiasites
+
+#### Examples
+
+##### Requirements check on Windows host
+
+```puppet
+bolt plan run remediate_install::check_requirements -n <host> --user Administrator \
+          --password <password> --transport winrm --no-ssl
+```
+
+##### Requiremets check on Ubuntu host
+
+```puppet
+bolt plan run remediate_install::check_requirements -n <host> --run-as root --user ubuntu \
+          --private_key <private key file> --no-host-key-check
+```
 
 #### Parameters
 

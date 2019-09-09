@@ -13,6 +13,7 @@
 # @$compose_url
 #    URL of the Remediar docker compose file
 #
+# @api private
 class remediate_install::install (
   String $install_dir,
   String $license_file,
