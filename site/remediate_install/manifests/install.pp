@@ -10,8 +10,11 @@
 # @param $compose_dir 
 #    Directory where to install docker-compose binary
 #
-# @$compose_url
+# @param $compose_url
 #    URL of the Remediar docker compose file
+#
+# @param $kernel
+#    OS Kernel like Windows or Linux
 #
 # @api private
 class remediate_install::install (
@@ -19,37 +22,18 @@ class remediate_install::install (
   String $license_file,
   String $compose_dir   = '',
   String $compose_url   = 'https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml',
+  String $kernel = 'Linux',
 ) {
-
-  if($compose_dir == '') {
-    $cmd = 'docker-compose run remediate start --license-file license.json'
+  if($kernel == 'Windows') {
+    $inst_class = 'remediate_install::install::windows'
   } else {
-    $cmd = "${compose_dir}/docker-compose run remediate start --license-file license.json"
+    $inst_class = 'remediate_install::install::linux'
   }
 
-  file { $install_dir:
-    ensure => directory,
-  }
-
-  file { "${install_dir}/docker-compose.yml":
-    ensure  => file,
-    source  => $compose_url,
-    require => File[$install_dir],
-    notify  => Exec['install-remediate'],
-  }
-
-  file { "${install_dir}/license.json":
-    ensure  => file,
-    source  => "file://${license_file}",
-    require => File[$install_dir],
-    before  => Exec['install-remediate']
-  }
-
-  exec { 'install-remediate':
-    command   => $cmd,
-    path      => [ '/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/local/bin' ],
-    cwd       => $install_dir,
-    logoutput => true,
-    user      => 'root',
+  class { $inst_class:
+    install_dir  => $install_dir,
+    license_file => $license_file,
+    compose_dir  => $compose_dir,
+    compose_url  => $compose_url
   }
 }
