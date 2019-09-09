@@ -18,27 +18,51 @@ class remediate_install::firewall::windows {
     description  => 'Inbound rule for acess to Remediate console (Port 8443)',
   }
 
-  windows_firewall::exception { 'WINRM-fallback':
+  windows_firewall::exception { 'WINRM-fallback in':
     ensure       => present,
-    direction    => 'both',
+    direction    => 'in',
     action       => 'allow',
     enabled      => true,
     protocol     => 'TCP',
     local_port   => 5985,
     remote_port  => 'any',
-    display_name => 'Windows Remote Management HTTP-In',
+    display_name => 'Windows Remote Management fallback HTTP-In',
     description  => 'Inbound rule for Windows Remote Management via WS-Management. [TCP 5985]',
   }
 
-  windows_firewall::exception { 'WINRM':
+  windows_firewall::exception { 'WINRM-fallback out':
     ensure       => present,
-    direction    => 'both',
+    direction    => 'out',
+    action       => 'allow',
+    enabled      => true,
+    protocol     => 'TCP',
+    local_port   => 5985,
+    remote_port  => 'any',
+    display_name => 'Windows Remote Management fallback HTTP-out',
+    description  => 'Inbound rule for Windows Remote Management via WS-Management. [TCP 5985]',
+  }
+
+  windows_firewall::exception { 'WINRM in':
+    ensure       => present,
+    direction    => 'in',
     action       => 'allow',
     enabled      => true,
     protocol     => 'TCP',
     local_port   => 5986,
     remote_port  => 'any',
     display_name => 'Windows Remote Management HTTP-In',
+    description  => 'Inbound rule for Windows Remote Management via WS-Management. [TCP 5986]',
+  }
+
+  windows_firewall::exception { 'WINRM out':
+    ensure       => present,
+    direction    => 'out',
+    action       => 'allow',
+    enabled      => true,
+    protocol     => 'TCP',
+    local_port   => 5986,
+    remote_port  => 'any',
+    display_name => 'Windows Remote Management HTTP-out',
     description  => 'Inbound rule for Windows Remote Management via WS-Management. [TCP 5986]',
   }
 
