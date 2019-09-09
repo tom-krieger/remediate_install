@@ -4,6 +4,13 @@
 # @param $nodes
 #    Nodes to run on
 #
+# @example Requirements check on Windows host
+#    bolt plan run remediate_install::check_requirements -n <host> --user Administrator \
+#              --password <password> --transport winrm --no-ssl
+#
+# @example Requiremets check on Ubuntu host
+#    bolt plan run remediate_install::check_requirements -n <host> --run-as root --user ubuntu \ 
+#              --private_key <private key file> --no-host-key-check
 plan remediate_install::check_requirements (
   TargetSpec $nodes,
 ) {
@@ -11,6 +18,8 @@ plan remediate_install::check_requirements (
 
     $target.apply_prep()
     $myfacts = facts($target)
+
+    out::message('Systemrequirements check started ...')
 
     # check system requirements
     # check hardware platform
@@ -37,7 +46,7 @@ plan remediate_install::check_requirements (
       }
       'Windows':           {
         if($myfacts['os']['release']['major'] != '10') {
-          crit("Remediate is not supported on Windowa version ${myfacts['os']['releae']['major']}. It has to be at least 10.")
+          crit("Remediate is not supported on Windowa version ${myfacts['os']['release']['major']}. It has to be at least 10.")
         }
       }
       default:             {
