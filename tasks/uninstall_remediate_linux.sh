@@ -1,12 +1,21 @@
 #!/bin/bash
 
+cd $PT_install_dir
+
 docker-compose run remediate stop
 
-docker ps | grep 'remediate_' | awk '{print $1" "$2;}' | while read id img ; do
+docker ps -a | grep 'remediate_' | awk '{print $1" "$2;}' | while read id img ; do
 
     docker stop $id
+    sleep 2
     docker rm $id
     docker image rm $img
+
+done
+
+docker image ls | grep -e "gcr.io/puppet-discovery" -e "vault" | awk '{print $3;}' | while read img ; do
+
+    docker image rm "${img}"
 
 done
 
