@@ -18,5 +18,8 @@
       }
     ],
     "parameters": {
+      "install_dir": {
+        "type": "String[1]"
+      }
     }
   }
