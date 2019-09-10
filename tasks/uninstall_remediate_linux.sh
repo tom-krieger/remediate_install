@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Install dir = $PT_install_dir"
+
 cd $PT_install_dir
 
 docker-compose run remediate stop
