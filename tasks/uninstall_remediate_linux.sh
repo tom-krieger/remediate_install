@@ -4,7 +4,7 @@ echo "Install dir = $PT_install_dir"
 
 cd $PT_install_dir
 
-docker-compose run remediate stop
+/usr/local/bin/docker-compose run remediate stop
 
 docker ps -a | grep 'remediate_' | awk '{print $1" "$2;}' | while read id img ; do
 
