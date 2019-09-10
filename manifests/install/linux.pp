@@ -52,4 +52,5 @@ class remediate_install::install::linux (
     user      => 'root',
   }
 
+  # remediate_remediate_run
 }
