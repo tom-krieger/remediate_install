@@ -2,5 +2,36 @@
 # See https://github.com/puppetlabs/puppetlabs_spec_helper#using-fixtures for details
 ---
 fixtures:
+  symlinks:
+    remediate_install: "#{source_dir}/plans"
   forge_modules:
-#     stdlib: "puppetlabs/stdlib"
+    stdlib:
+      repo: "puppetlabs/stdlib"
+      ref: "6.0.0"
+    registry:
+      repo: "puppetlabs/registry"
+      ref: "2.1.0"
+    win_firewall:
+      repo: "puppet/windows_firewall"
+      ref: "2.0.2"
+    firwall:
+      repo: "puppetlabs/firewall"
+      ref: "2.0.0"
+    reboot:
+      repo: "puppetlabs/reboot"
+      ref: "2.2.0"
+    powershell:
+      repo: "puppetlabs/powershell"
+      ref: "2.3.0"
+    translate:
+      repo: "puppetlabs/translate"
+      ref: "2.0.0"
+    apt:
+      repo: "puppetlabs/apt"
+      ref: "7.1.0"
+    docker:
+      repo: "puppetlabs/docker"
+      ref: "3.7.0"
+    archive:
+      repo: "puppet/archive"
+      ref: "4.2.0"
