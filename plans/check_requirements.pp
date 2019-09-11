@@ -19,7 +19,7 @@ plan remediate_install::check_requirements (
     $target.apply_prep()
     $myfacts = facts($target)
 
-    out::message('Systemrequirements check started ...')
+    out::message('System requirements check started ...')
 
     # check system requirements
     # check hardware platform
@@ -63,5 +63,7 @@ plan remediate_install::check_requirements (
     if($myfacts['processors']['count'] < 2) {
       crit('Remediate need 2 cpus at minimum.')
     }
+
+    out::message('System requirements check finished')
   }
 }
