@@ -46,7 +46,7 @@ plan remediate_install::check_requirements (
       }
       'Windows':           {
         if($myfacts['os']['release']['major'] != '10') {
-          crit("Remediate is not supported on Windowa version ${myfacts['os']['release']['major']}. It has to be at least 10.")
+          crit("Remediate is not supported on Windows version ${myfacts['os']['release']['major']}. It is only supported on Windows 10.")
         }
       }
       default:             {
