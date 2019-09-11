@@ -3,7 +3,6 @@ require 'spec_helper'
 describe 'remediate_install::firewall' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
-      let(:facts) { os_facts }
       let(:facts) do
         os_facts.merge(
           'operatingsystemversion' => 'windows',
@@ -18,13 +17,13 @@ describe 'remediate_install::firewall' do
       if os =~ %r{windows}
         let(:params) do
           {
-          'kernel' => 'Windows',
+            'kernel' => 'Windows',
           }
         end
       else
         let(:params) do
           {
-          'kernel' => 'Linux',
+            'kernel' => 'Linux',
           }
         end
       end
