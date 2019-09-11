@@ -4,6 +4,7 @@
 # @api private
 class remediate_install::firewall::linux {
 
+  class { ['remediate_install::firewall::linux::post', 'remediate_install::firewall::linux::pre']: }
   Firewall {
       before  => Class['remediate_install::firewall::linux::post'],
       require => Class['remediate_install::firewall::linux::pre'],
