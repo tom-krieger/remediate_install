@@ -259,7 +259,7 @@ plan remediate_install (
         if($myfacts['kernel'] == 'Linux') {
           $res = run_task('remediate_install::check_firewall', $nodes)
           $fwd = $res.first
-          if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled')) {
+          if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled') or ($fwd['windows-fw'] == 'enabled')) {
             apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
               class { 'remediate_install::firewall':
                 kernel => $myfacts['kernel'],
