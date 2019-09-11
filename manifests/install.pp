@@ -22,7 +22,7 @@ class remediate_install::install (
   String $license_file,
   String $compose_dir   = '',
   String $compose_url   = 'https://storage.googleapis.com/remediate/stable/latest/docker-compose.yml',
-  String $kernel = 'Linux',
+  String $kernel        = 'Linux',
 ) {
   if($kernel == 'Windows') {
     $inst_class = 'remediate_install::install::windows'
