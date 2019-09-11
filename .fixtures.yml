@@ -3,7 +3,7 @@
 ---
 fixtures:
   symlinks:
-    remediate_install: "#{source_dir}/plans"
+    remediate_install: "#{source_dir}"
   forge_modules:
     stdlib:
       repo: "puppetlabs/stdlib"
