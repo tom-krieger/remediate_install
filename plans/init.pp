@@ -66,10 +66,9 @@
 #          install_compose=y install_remediate=y configure_firewall=y -n <host> --run-as root \
 #          --user <user> [--private_key <path to privare-key>] [--password] --no-host-key-check \
 #          [--sudo-password [PASSWORD]]
-# This bolt plan 
+# 
 plan remediate_install (
   TargetSpec $nodes,
-  # String[1] $install_docker,
   Enum['y', 'n'] $install_docker,
   Enum['y', 'n'] $init_swarm,
   Enum['y', 'n'] $install_compose,
