@@ -14,6 +14,7 @@
 /Gemfile.lock
 /junit/
 /log/
+/modules/
 /pkg/
 /spec/fixtures/manifests/
 /spec/fixtures/modules/
@@ -40,3 +41,4 @@
 /.yardopts
 /spec/
 /.vscode/
+/_archived_code/
