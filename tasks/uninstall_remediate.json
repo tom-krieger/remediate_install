@@ -19,7 +19,8 @@
     ],
     "parameters": {
       "install_dir": {
-        "type": "String[1]"
+        "type": "String[1]",
+        "description": "Installation directory"
       }
     }
   }

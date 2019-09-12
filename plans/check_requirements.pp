@@ -1,7 +1,7 @@
 # @summary
 #    Check Remediate installation prerequiasites
 #
-# @param $nodes
+# @param nodes
 #    Nodes to run on
 #
 # @example Requirements check on Windows host

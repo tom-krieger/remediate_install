@@ -2,61 +2,61 @@
 #
 # Bolt plan to install Puppet Remediate. 
 #
-# @param $nodes
+# @param nodes
 #    The target nodes
 #
-# @param $install_docker
+# @param install_docker
 #    Flag fpr Docker install.  
 #    Valid input: 'y' or 'no'
 #
-# @param $init_swarm
+# @param init_swarm
 #    Initialize Docker Swarm during installation. This will initialize a first manager swarm node.  
 #    Valid input: 'y' or 'n'
 #
-# @param $install_compose
+# @param install_compose
 #    Install docker-compose binary which is needed for Remediate installation.  
 #    Valid input: 'y' or 'n'.
 #
-# @param $compose_version
+# @param compose_version
 #    The version of docker-compose to install if installation of docker-compose is requested. 
 #    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
 #
-# @param $install_remediate
+# @param install_remediate
 #    Install Remediate.  
 #    Valid input: 'y' or 'n'
 #
-# @param $configure_firewall
+# @param configure_firewall
 #    Serup a firewall with all rules needed for Remediate. If unsure please set this parameter to no 
 #    and do the firewall configuration yourself. If you manage the firewall on the box with Puppet or some
 #    other tool please set this parameter to 'n'.  
 #    Valid input: 'y' or 'n'
 #
-# @param $license_file
+# @param license_file
 #    Full qualified filename of the Remediate license file. 
 #
-# @param $docker_users
+# @param docker_users
 #    Users to add to the docker group
 #
-# @param $compose_version
+# @param compose_version
 #    The version of docker-compose to install if installation of docker-compose is requested. 
 #    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
 #
-# @param $compose_install_path
+# @param compose_install_path
 #    Path where to install docker-compose binary 
 #
-# @param $win_install_dir
+# @param win_install_dir
 #    Directory where to install Remediate on Windows boxes
 #
-# @param $unix_install_dir
+# @param unix_install_dir
 #    Directory where to install Remediate on Unix systems
 #
-# @param $enforce_system_requirements
+# @param enforce_system_requirements
 #    Set to true the installer breaks if the system requirements for Remediate are not met.
 #
-# @param $noop_mode
+# @param noop_mode
 #    Run apply commands in noop mode. If set to true no changes will be made to the system
 #
-# @param $docker_ee
+# @param docker_ee
 #    Flag to install Docker Enterprise. Must be set to true on Windows boxes.
 #
 # @example Upload license file
@@ -198,6 +198,7 @@ plan remediate_install (
       out::message('installing docker')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+
           class { 'docker':
             docker_ee      => $docker_ee,
             manage_package => true,
@@ -205,7 +206,7 @@ plan remediate_install (
             docker_users   => $docker_users,
           }
 
-          if($myfacts['kernel'] != 'Windows') {
+          if($facts['os']['name'] != 'CentOS') {
             package { 'yum-utils':
               ensure => installed,
             }
