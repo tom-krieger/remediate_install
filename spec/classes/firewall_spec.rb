@@ -14,20 +14,6 @@ describe 'remediate_install::firewall' do
         )
       end
 
-      if os =~ %r{windows}
-        let(:params) do
-          {
-            'kernel' => 'Windows',
-          }
-        end
-      else
-        let(:params) do
-          {
-            'kernel' => 'Linux',
-          }
-        end
-      end
-
       it { is_expected.to compile.with_all_deps }
     end
   end

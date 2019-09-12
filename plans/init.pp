@@ -256,26 +256,16 @@ plan remediate_install (
     if($configure_firewall == 'y') {
       out::message('configuring firewall')
       without_default_logging() || {
-        if($myfacts['kernel'] == 'Linux') {
-          $res = run_task('remediate_install::check_firewall', $nodes)
-          $fwd = $res.first
-          if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled') or ($fwd['windows-fw'] == 'enabled')) {
-            apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-              class { 'remediate_install::firewall':
-                kernel => $myfacts['kernel'],
-              }
-            }
-          } else {
-            warning('No firewall running on host, no configuration will be done')
-          }
-        } elsif($myfacts['kernel'] == 'Windows') {
+        $res = run_task('remediate_install::check_firewall', $nodes)
+        $fwd = $res.first
+        if($fwd['firewall'] == 'enabled') {
           apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
             class { 'remediate_install::firewall':
-              kernel => $myfacts['kernel'],
             }
           }
+        } else {
+          warning('No firewall running on host, no configuration will be done')
         }
-
       }
     }
 
@@ -302,7 +292,6 @@ plan remediate_install (
             install_dir  => $install_dir,
             license_file => $license_file,
             compose_dir  => $compose_path,
-            kernel       => $myfacts['kernel'],
           }
         }
       }

@@ -10,7 +10,6 @@ describe 'remediate_install::install' do
           {
             'install_dir' => 'c:/remediate',
             'license_file' => 'c:/license.json',
-            'kernel' => 'Windows',
           }
         end
       else
@@ -18,7 +17,6 @@ describe 'remediate_install::install' do
           {
             'install_dir' => '/opt/remediate',
             'license_file' => '/tmp/license.json',
-            'kernel' => 'Linux',
           }
         end
       end
