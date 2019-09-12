@@ -23,6 +23,6 @@ if ($FirewallStatus -ne 0) {
     $status = "disabled"
 }
 
-$result = @{ "windows-fw" = $status }
+$result = @{ "firewall" = $status }
 
 ConvertTo-Json -InputObject $result -Compress
