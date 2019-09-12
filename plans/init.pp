@@ -236,7 +236,7 @@ plan remediate_install (
 
     # check for docker compose and install if not present
     if($install_compose == 'y') {
-      out::message('install docker compose')
+      out::message('installing docker compose')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           if($facts['kernel'].downcase() == 'windows') {
@@ -281,7 +281,7 @@ plan remediate_install (
 
     # install remedeate
     if($install_remediate == 'y') {
-      case facts['kernel'].downcase() {
+      case $facts['kernel'].downcase() {
         'linux': {
           $install_dir = $unix_install_dir
         }
