@@ -59,6 +59,8 @@ This step will install all needed Puppet modules into the remediate_install modu
 
 This module contains two Bolt plans. One plan is for simply checking the system requirements. The second plan is for installing Remediate on your system.
 
+If you have a managed firewall running on the box installing Remediate please make sure to aet the parameter for the firewall configuration during installation to 'n'. Otherwise you may have issues with the fireweall rules mixed up.
+
 ### Checking system requirements
 
 ```puppet
