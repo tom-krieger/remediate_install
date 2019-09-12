@@ -192,7 +192,7 @@ plan remediate_install (
     out::message('====================================================================')
     out::message(' ')
 
-    # run installation
+    # run Remediate installation steps
     if($install_docker == 'y') {
       # install docker and additional rpm packages
       out::message('installing docker')
@@ -224,7 +224,7 @@ plan remediate_install (
     }
 
     if($init_swarm == 'y') {
-      out::message('initialize docker swarm')
+      out::message('initializing docker swarm')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           docker::swarm {'swarm':
@@ -239,17 +239,21 @@ plan remediate_install (
       out::message('install docker compose')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-          if($myfacts['kernel'] == 'Windows') {
-            class {'docker::compose':
-              ensure  => present,
-              version => $compose_version,
+          if($facts['kernel'].downcase() == 'windows') {
+            $compose_params = {
+              'ensure'  => present,
+              'version' => $compose_version,
             }
           } else {
-            class {'docker::compose':
+            $compose_params = {
               ensure       => present,
               version      => $compose_version,
               install_path => $compose_install_path,
             }
+          }
+
+          class {'docker::compose':
+            *  => $compose_params,
           }
         }
       }
@@ -260,29 +264,28 @@ plan remediate_install (
 
     # configure firewall
     if($configure_firewall == 'y') {
-      out::message('configuring firewall')
       without_default_logging() || {
         $res = run_task('remediate_install::check_firewall', $nodes)
         $fwd = $res.first
-        if($fwd['firewall'] == 'enabled') {
+        if($fwd['firewall'] == 'disabled') {
+          out::message('configuring firewall')
           apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
             class { 'remediate_install::firewall':
             }
           }
         } else {
-          warning('No firewall running on host, no configuration will be done')
+          warning('Firewall already running on host, no configuration will be done')
         }
       }
     }
 
     # install remedeate
     if($install_remediate == 'y') {
-      out::message('install remediate')
-      case $myfacts['kernel'] {
-        'Linux': {
+      case facts['kernel'].downcase() {
+        'linux': {
           $install_dir = $unix_install_dir
         }
-        'Windows': {
+        'windows': {
           $install_dir = $win_install_dir
         }
         default: {
@@ -290,7 +293,7 @@ plan remediate_install (
         }
       }
 
-      out::message("installing Remediate in ${install_dir}")
+      out::message("installing Puppet Remediate in ${install_dir}")
 
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
@@ -303,4 +306,6 @@ plan remediate_install (
       }
     }
   }
+
+  return('installation finished')
 }
