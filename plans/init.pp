@@ -6,28 +6,33 @@
 #    The target nodes
 #
 # @param $install_docker
-#    Flag fpr Docker install. Valid input: 'y' or 'no'
+#    Flag fpr Docker install.  
+#    Valid input: 'y' or 'no'
 #
 # @param $init_swarm
-#    Initialize Docker Swarm during installation. This will initialize a first manager swarm node. 
+#    Initialize Docker Swarm during installation. This will initialize a first manager swarm node.  
 #    Valid input: 'y' or 'n'
 #
 # @param $install_compose
-#    Install docker-compose binary which is needed for Remediate installation. Valid input: 'y' or 'n'.
+#    Install docker-compose binary which is needed for Remediate installation.  
+#    Valid input: 'y' or 'n'.
 #
 # @param $compose_version
 #    The version of docker-compose to install if installation of docker-compose is requested. 
 #    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
 #
 # @param $install_remediate
-#    Install Remediate. Valid input: 'y' or 'n'
+#    Install Remediate.  
+#    Valid input: 'y' or 'n'
 #
 # @param $configure_firewall
 #    Serup a firewall with all rules needed for Remediate. If unsure please set this parameter to no 
-#    and do the firewall configuration yourself. Valid input: 'y' or 'n'
+#    and do the firewall configuration yourself. If you manage the firewall on the box with Puppet or some
+#    other tool please set this parameter to 'n'.  
+#    Valid input: 'y' or 'n'
 #
 # @param $license_file
-#    Full qualified filename of teh Remediate license file. 
+#    Full qualified filename of the Remediate license file. 
 #
 # @param $docker_users
 #    Users to add to the docker group
