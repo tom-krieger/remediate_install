@@ -31,26 +31,26 @@ plan remediate_install::check_requirements (
     case $myfacts['os']['name'] {
       'RedHat', 'CentOS':  {
         if($myfacts['os']['release']['major'] < '7') {
-          out::message("   => Remediate is not supported on Redhat/CentOS version ${myfacts['os']['release']['major']}. " +
-                        'It has to be at least 7.')
+          out::message("   => Remediate is not supported on Redhat/CentOS version ${myfacts['os']['release']['major']}. \
+It has to be at least 7.")
         }
       }
       'Debian':            {
         if($myfacts['os']['release']['major'] < '8') {
-          out::message("   => Remediate is not supported on Debian version ${myfacts['os']['release']['major']}. " +
-                        'It has to be at least 8.')
+          out::message("   => Remediate is not supported on Debian version ${myfacts['os']['release']['major']}. \
+It has to be at least 8.")
         }
       }
       'Ubuntu':            {
         if($myfacts['os']['release']['major'] < '14.04') {
-          out::message("   => Remediate is not supported on Ubuntu version ${myfacts['os']['release']['major']}. " +
-                        'It has to be at least 14.04.')
+          out::message("   => Remediate is not supported on Ubuntu version ${myfacts['os']['release']['major']}. \
+It has to be at least 14.04.")
         }
       }
       'Windows':           {
         if($myfacts['os']['release']['major'] != '10') {
-          out::message("   => Remediate is not supported on Windows version ${myfacts['os']['release']['major']}. " +
-                        'It is only supported on Windows 10.')
+          out::message("   => Remediate is not supported on Windows version ${myfacts['os']['release']['major']}. \
+It is only supported on Windows 10.")
         }
       }
       default:             {
