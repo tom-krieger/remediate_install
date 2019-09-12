@@ -51,6 +51,4 @@ class remediate_install::install::linux (
     logoutput => true,
     user      => 'root',
   }
-
-  # remediate_remediate_run
 }
