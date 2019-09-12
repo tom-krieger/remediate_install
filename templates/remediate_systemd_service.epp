@@ -1,0 +1,14 @@
+[Unit]
+Description=Remediate oneshot service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=<%= $startcommand %>
+RemainAfterExit=true
+ExecStop=<%= $stopcommand %>
+StandardOutput=journal
+TimeOutSec=300
+
+[Install]
+WantedBy=multi-user.target
