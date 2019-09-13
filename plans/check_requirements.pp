@@ -1,5 +1,5 @@
 # @summary
-#    Check Remediate installation prerequiasites
+#    Check Remediate installation prerequisites
 #
 # @param nodes
 #    Nodes to run on

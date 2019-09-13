@@ -11,6 +11,8 @@
 #
 # @example
 #   include remediate_install::service
+#
+# @api private
 class remediate_install::install::linux::service (String $install_dir, String $compose_dir) {
   if($facts['os']['family'] == 'RedHat') {
     $start = "cd ${install_dir} ; ${compose_dir}/docker-comnpose run remediate start"
