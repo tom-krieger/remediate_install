@@ -281,7 +281,7 @@ plan remediate_install (
 
     # install remedeate
     if($install_remediate == 'y') {
-      case $facts['kernel'].downcase() {
+      case $myfacts['kernel'].downcase() {
         'linux': {
           $install_dir = $unix_install_dir
         }
