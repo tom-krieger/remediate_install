@@ -74,10 +74,10 @@
 # 
 plan remediate_install (
   TargetSpec $nodes,
-  Enum['y', 'n'] $install_docker,
-  Enum['y', 'n'] $init_swarm,
-  Enum['y', 'n'] $install_compose,
-  Enum['y', 'n'] $install_remediate,
+  Enum['y', 'n'] $install_docker       = 'y',
+  Enum['y', 'n'] $init_swarm           = 'y',
+  Enum['y', 'n'] $install_compose      = 'y',
+  Enum['y', 'n'] $install_remediate    = 'y',
   Enum['y', 'n'] $configure_firewall   = 'n',
   String $license_file                 = undef,
   Array $docker_users                  = ['centos'],
@@ -94,75 +94,14 @@ plan remediate_install (
     $target.apply_prep()
     $myfacts = facts($target)
 
-    # check system requirements
-    # check hardware platform
-    if($myfacts['os']['hardware'] != 'x86_64') {
-      if($enforce_system_requirements) {
-        fail_plan("Remediate is not supported on ${myfacts['hardwaremodel']} hardware")
-      } else {
-        crit("Remediate is not supported on ${myfacts['hardwaremodel']} hardware")
+    $requirements_ok = run_plan('remediate_install::check_requirements', 'nodes' => $target)
+    notice($requirements_ok)
+    if ! $requirements_ok {
+      if $enforce_system_requirements {
+        fail_plan("${target} does not meet Remediate requirements. Stopping installation.")
       }
-    }
-
-    # check os version
-    case $myfacts['os']['name'] {
-      'RedHat', 'CentOS':  {
-        if($myfacts['os']['release']['major'] < '7') {
-          if($enforce_system_requirements) {
-            fail_plan("Remediate is not supported on Redhat/CentOS version ${myfacts['os']['releae']['major']}. It has to be at least 7.")
-          } else {
-            crit("Remediate is not supported on Redhat/CentOS version ${myfacts['os']['releae']['major']}. It has to be at least 7.")
-          }
-        }
-      }
-      'Debian':            {
-        if($myfacts['os']['release']['major'] < '8') {
-          if($enforce_system_requirements) {
-            fail_plan("Remediate is not supported on Debian version ${myfacts['os']['releae']['major']}. It has to be at least 8.")
-          } else {
-            crit("Remediate is not supported on Debian version ${myfacts['os']['releae']['major']}. It has to be at least 8.")
-          }
-        }
-      }
-      'Ubuntu':            {
-        if($myfacts['os']['release']['major'] < '14.04') {
-          if($enforce_system_requirements) {
-            fail_plan("Remediate is not supported on Ubuntu version ${myfacts['os']['releae']['major']}. It has to be at least 14.04.")
-          } else {
-            crit("Remediate is not supported on Ubuntu version ${myfacts['os']['releae']['major']}. It has to be at least 14.04.")
-          }
-        }
-      }
-      'Windows':           {
-        if($myfacts['os']['release']['major'] != '10') {
-          $msg = "Remediate is not supported on Windows version ${myfacts['os']['release']['major']}. It is only supported on Windows 10."
-          if($enforce_system_requirements) {
-            fail_plan($msg)
-          } else {
-            crit($msg)
-          }
-        }
-      }
-      default:             {
-        fail_plan("OS ${myfacts['os']['name']} is not supported.")
-      }
-    }
-
-    # check system memory
-    if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
-      if($enforce_system_requirements) {
-        fail_plan('System memory has to be at least 8 GB.')
-      } else {
-        crit('System memory has to be at least 8 GB.')
-      }
-    }
-
-    # check cpu count
-    if($myfacts['processors']['count'] < 2) {
-      if($enforce_system_requirements) {
-        fail_plan('Remediate need 2 cpus at minimum.')
-      } else {
-        crit('Remediate need 2 cpus at minimum.')
+      else {
+        out::message("${target} does not meet Remediate requirements. Continuing installation (not enforcing system requirements).")
       }
     }
 
@@ -198,26 +137,9 @@ plan remediate_install (
       out::message('installing docker')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-
-          class { 'docker':
-            docker_ee      => $docker_ee,
-            manage_package => true,
-            manage_service => true,
-            docker_users   => $docker_users,
-          }
-
-          if($facts['os']['name'] != 'CentOS') {
-            package { 'yum-utils':
-              ensure => installed,
-            }
-
-            package { 'device-mapper-persistent-data':
-              ensure => installed,
-            }
-
-            package {'lvm2':
-              ensure => installed
-            }
+          class { 'remediate_install::install::docker':
+            docker_users => $docker_users,
+            docker_ee    => $docker_ee,
           }
         }
       }
@@ -239,19 +161,15 @@ plan remediate_install (
       out::message('installing docker compose')
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-          if($facts['kernel'].downcase() == 'windows') {
-            $compose_params = {
-              'ensure'  => present,
-              'version' => $compose_version,
-            }
-          } else {
-            $compose_params = {
-              ensure       => present,
-              version      => $compose_version,
-              install_path => $compose_install_path,
-            }
+          $default_compose_params = {
+            'ensure'  => present,
+            'version' => $compose_version,
           }
-
+          if($facts['kernel'].downcase() == 'linux') {
+            $compose_params = $default_compose_params + { 'install_path' => $compose_install_path }
+          } else {
+            $compose_params = $default_compose_params
+          }
           class {'docker::compose':
             *  => $compose_params,
           }
@@ -293,13 +211,18 @@ plan remediate_install (
         }
       }
 
+      out::message("uploading license file ${license_file}")
+
+      $remote_license_file_path = '/tmp/license.json'
+      upload_file($license_file, $remote_license_file_path, $target, "Uploading license file ${license_file}")
+
       out::message("installing Puppet Remediate in ${install_dir}")
 
       without_default_logging() || {
         apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           class { 'remediate_install::install':
             install_dir  => $install_dir,
-            license_file => $license_file,
+            license_file => $remote_license_file_path,
             compose_dir  => $compose_path,
           }
         }

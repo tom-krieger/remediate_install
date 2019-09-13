@@ -15,6 +15,7 @@ plan remediate_install::check_requirements (
   TargetSpec $nodes,
 ) {
   get_targets($nodes).each |$target| {
+    notice($target)
     $target.apply_prep()
     $myfacts = facts($target)
 
@@ -99,12 +100,19 @@ It is only supported on Windows 10.")
     out::message("Host ................ : ${target}")
     out::message("Hardware architecture : ( ${arch} )")
     out::message("Operation system .... : ( ${osvers} )")
-    out::message("Memeoy .............. : ( ${memsize} )")
+    out::message("Memory .............. : ( ${memsize} )")
     out::message("CPU count ........... : ( ${cpucount} )")
     out::message(' ')
     out::message('====================================================================')
     out::message(' ')
-  }
+    out::message('requirements check finished')
 
-  return('requirements check finished')
+    if $arch != 'ok' or $osvers != 'ok' or $memsize != 'ok' or $cpucount != 'ok' {
+      return(false)
+    } else {
+      return(true)
+    }
+  }
 }
+
+
