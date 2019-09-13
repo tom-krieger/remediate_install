@@ -14,8 +14,8 @@
 plan remediate_install::check_requirements (
   TargetSpec $nodes,
 ) {
-  get_targets($nodes).each |$target| {
 
+  get_targets($nodes).each |$target| {
     $target.apply_prep()
     $myfacts = facts($target)
 
@@ -70,4 +70,6 @@ It is only supported on Windows 10.")
 
     out::message("System requirements check finished on ${target}")
   }
+
+  return($result)
 }
