@@ -114,6 +114,7 @@ The installer will copy the license file into the Remediate installation directo
 - `remediate_install::install::linux`: Install remediate oin Linux
 - `remediate_install::install::linux::service`: Install a service for remediate
 - `remediate_install::install::windows`: Install remediate on windows
+- `remediate_install::install::docker`: Install docker and its prerequisites
 
 ### Tasks
 
@@ -165,7 +166,7 @@ Valid input: 'y' or 'n'
 
 ##### `license_file`
 
-Full qualified filename of the Remediate license file.
+Full qualified filename of the Remediate license file on your local system. Upload will be done by installer.
 
 ##### `docker_users`
 

@@ -32,7 +32,7 @@
 #    Valid input: 'y' or 'n'
 #
 # @param license_file
-#    Full qualified filename of the Remediate license file. 
+#    Full qualified filename of the Remediate license file on your local system. Upload will be done by installer. 
 #
 # @param docker_users
 #    Users to add to the docker group
@@ -71,10 +71,10 @@
 # 
 plan remediate_install (
   TargetSpec $nodes,
-  Enum['y', 'n'] $install_docker,
-  Enum['y', 'n'] $init_swarm,
-  Enum['y', 'n'] $install_compose,
-  Enum['y', 'n'] $install_remediate,
+  Enum['y', 'n'] $install_docker       = 'y',
+  Enum['y', 'n'] $init_swarm           = 'y',
+  Enum['y', 'n'] $install_compose      = 'y',
+  Enum['y', 'n'] $install_remediate    = 'y',
   Enum['y', 'n'] $configure_firewall   = 'n',
   String $license_file                 = undef,
   Array $docker_users                  = ['centos'],
@@ -141,7 +141,11 @@ plan remediate_install (
         }
       }
       default:             {
-        fail_plan("OS ${myfacts['os']['name']} is not supported.")
+        if($enforce_system_requirements) {
+          fail_plan("OS ${myfacts['os']['name']} is not supported.")
+        } else {
+          crit("OS ${myfacts['os']['name']} is not supported.")
+        }
       }
     }
 
@@ -194,27 +198,10 @@ plan remediate_install (
       # install docker and additional rpm packages
       out::message('installing docker')
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-
-          class { 'docker':
-            docker_ee      => $docker_ee,
-            manage_package => true,
-            manage_service => true,
-            docker_users   => $docker_users,
-          }
-
-          if($facts['os']['name'] != 'CentOS') {
-            package { 'yum-utils':
-              ensure => installed,
-            }
-
-            package { 'device-mapper-persistent-data':
-              ensure => installed,
-            }
-
-            package {'lvm2':
-              ensure => installed
-            }
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+          class { 'remediate_install::install::docker':
+            docker_users => $docker_users,
+            docker_ee    => $docker_ee,
           }
         }
       }
@@ -223,7 +210,7 @@ plan remediate_install (
     if($init_swarm == 'y') {
       out::message('initializing docker swarm')
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           docker::swarm {'swarm':
             init => true,
           }
@@ -235,7 +222,7 @@ plan remediate_install (
     if($install_compose == 'y') {
       out::message('installing docker compose')
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           if($facts['kernel'].downcase() == 'windows') {
             $compose_params = {
               'ensure'  => present,
@@ -266,7 +253,7 @@ plan remediate_install (
         $fwd = $res.first
         if($fwd['firewall'] == 'disabled') {
           out::message('configuring firewall')
-          apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+          apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
             class { 'remediate_install::firewall':
             }
           }
@@ -290,13 +277,21 @@ plan remediate_install (
         }
       }
 
+      if($myfacts['kernel'].downcase() == 'windows') {
+        $remote_license_file = 'C:/Users/Administrator/Documents/license.json'
+      } else {
+        $remote_license_file = '/tmp/license.json'
+      }
+
+      upload_file($license_file, $remote_license_file, $target, "Uploading license file ${license_file} to ${remote_license_file}")
+
       out::message("installing Puppet Remediate in ${install_dir}")
 
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           class { 'remediate_install::install':
             install_dir  => $install_dir,
-            license_file => $license_file,
+            license_file => $remote_license_file,
             compose_dir  => $compose_path,
           }
         }
