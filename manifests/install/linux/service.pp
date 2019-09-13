@@ -28,11 +28,5 @@ class remediate_install::install::linux::service (String $install_dir, String $c
       group   => 'root',
       mode    => '0755',
     }
-
-    service { 'remediate':
-      ensure  => running,
-      enable  => true,
-      require => File['/etc/systemd/system/remediate.service'],
-    }
   }
 }

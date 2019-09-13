@@ -50,7 +50,6 @@ class remediate_install::install::linux (
     cwd       => $install_dir,
     logoutput => true,
     user      => 'root',
-    before    => Class['remediate_install::install::linux::service'],
   }
 
   class { 'remediate_install::install::linux::service':
