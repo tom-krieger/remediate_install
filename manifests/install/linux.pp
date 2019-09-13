@@ -1,5 +1,5 @@
 # @summary
-#    Install remediate oin Linux
+#    Install Remediate on Linux
 # 
 # @param install_dir
 #   Directory where to install Remediate
