@@ -37,10 +37,6 @@
 # @param docker_users
 #    Users to add to the docker group
 #
-# @param compose_version
-#    The version of docker-compose to install if installation of docker-compose is requested. 
-#    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
-#
 # @param compose_install_path
 #    Path where to install docker-compose binary 
 #
@@ -62,6 +58,7 @@
 # @example Upload license file
 #    bolt file upload /tmp/license.json /tmp/vr-license.json -n <host> --user <user> \
 #              [--private_key <path to privare-key>] [--password] --no-host-key-check
+#
 # @example Requirements check
 #    bolt plan run remediate_install::check_requirements -n <host> --run-as root --user <user> \
 #              [--private_key <path to privare-key>] [--password] --no-host-key-check
