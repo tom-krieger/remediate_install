@@ -27,3 +27,4 @@
 /inventory.yaml
 modules/*
 .rerun.json
+*.bak

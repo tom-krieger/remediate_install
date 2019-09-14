@@ -1,22 +1,26 @@
 {
-    "description": "Check if firewall is running",
+    "description": "Uninstall Remediate",
     "input_method": "environment",
     "supports_noop": false,
     "private": true,
     "implementations": [
       {
-        "name": "check_firewall_linux.sh",
+        "name": "uninstall_remediate_linux.sh",
         "requirements": [
           "shell"
         ]
       },
       {
-        "name": "check_firewall_windows.ps1",
+        "name": "uninstall_remediate_windows.ps1",
         "requirements": [
           "powershell"
         ]
       }
     ],
     "parameters": {
+      "install_dir": {
+        "type": "String[1]",
+        "description": "Installation directory"
+      }
     }
   }

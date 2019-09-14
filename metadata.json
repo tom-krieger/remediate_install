@@ -5,6 +5,8 @@
   "summary": "Remediate installer",
   "license": "Apache-2.0",
   "source": "https://github.com/tom-krieger/remediate_install.git",
+  "project_page": "https://github.com/tom-krieger/remediate_install",
+  "issues_url": "https://github.com/tom-krieger/remediate_install/issues",
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
@@ -55,22 +57,10 @@
       ]
     },
     {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "7",
         "8"
-      ]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "7"
       ]
     },
     {
@@ -91,7 +81,7 @@
     {
       "operatingsystem": "windows",
       "operatingsystemrelease": [
-        "2019",
+        "2016",
         "10"
       ]
     }

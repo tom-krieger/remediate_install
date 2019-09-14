@@ -2,61 +2,63 @@
 #
 # Bolt plan to install Puppet Remediate. 
 #
-# @param $nodes
+# @param nodes
 #    The target nodes
 #
-# @param $install_docker
-#    Flag fpr Docker install. Valid input: 'y' or 'no'
+# @param install_docker
+#    Flag fpr Docker install.  
+#    Valid input: 'y' or 'no'
 #
-# @param $init_swarm
-#    Initialize Docker Swarm during installation. This will initialize a first manager swarm node. 
+# @param init_swarm
+#    Initialize Docker Swarm during installation. This will initialize a first manager swarm node.  
 #    Valid input: 'y' or 'n'
 #
-# @param $install_compose
-#    Install docker-compose binary which is needed for Remediate installation. Valid input: 'y' or 'n'.
+# @param install_compose
+#    Install docker-compose binary which is needed for Remediate installation.  
+#    Valid input: 'y' or 'n'.
 #
-# @param $compose_version
+# @param compose_version
 #    The version of docker-compose to install if installation of docker-compose is requested. 
 #    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
 #
-# @param $install_remediate
-#    Install Remediate. Valid input: 'y' or 'n'
+# @param install_remediate
+#    Install Remediate.  
+#    Valid input: 'y' or 'n'
 #
-# @param $configure_firewall
+# @param configure_firewall
 #    Serup a firewall with all rules needed for Remediate. If unsure please set this parameter to no 
-#    and do the firewall configuration yourself. Valid input: 'y' or 'n'
+#    and do the firewall configuration yourself. If you manage the firewall on the box with Puppet or some
+#    other tool please set this parameter to 'n'.  
+#    Valid input: 'y' or 'n'
 #
-# @param $license_file
-#    Full qualified filename of teh Remediate license file. 
+# @param license_file
+#    Full qualified filename of the Remediate license file on your local system. Upload will be done by installer. 
 #
-# @param $docker_users
+# @param docker_users
 #    Users to add to the docker group
 #
-# @param $compose_version
-#    The version of docker-compose to install if installation of docker-compose is requested. 
-#    Please keep in mind that Remedieate needs version 1.24.1 of docker-compose at least.
-#
-# @param $compose_install_path
+# @param compose_install_path
 #    Path where to install docker-compose binary 
 #
-# @param $win_install_dir
+# @param win_install_dir
 #    Directory where to install Remediate on Windows boxes
 #
-# @param $unix_install_dir
+# @param unix_install_dir
 #    Directory where to install Remediate on Unix systems
 #
-# @param $enforce_system_requirements
+# @param enforce_system_requirements
 #    Set to true the installer breaks if the system requirements for Remediate are not met.
 #
-# @param $noop_mode
+# @param noop_mode
 #    Run apply commands in noop mode. If set to true no changes will be made to the system
 #
-# @param $docker_ee
+# @param docker_ee
 #    Flag to install Docker Enterprise. Must be set to true on Windows boxes.
 #
 # @example Upload license file
 #    bolt file upload /tmp/license.json /tmp/vr-license.json -n <host> --user <user> \
 #              [--private_key <path to privare-key>] [--password] --no-host-key-check
+#
 # @example Requirements check
 #    bolt plan run remediate_install::check_requirements -n <host> --run-as root --user <user> \
 #              [--private_key <path to privare-key>] [--password] --no-host-key-check
@@ -66,14 +68,13 @@
 #          install_compose=y install_remediate=y configure_firewall=y -n <host> --run-as root \
 #          --user <user> [--private_key <path to privare-key>] [--password] --no-host-key-check \
 #          [--sudo-password [PASSWORD]]
-# This bolt plan 
+# 
 plan remediate_install (
   TargetSpec $nodes,
-  # String[1] $install_docker,
-  Enum['y', 'n'] $install_docker,
-  Enum['y', 'n'] $init_swarm,
-  Enum['y', 'n'] $install_compose,
-  Enum['y', 'n'] $install_remediate,
+  Enum['y', 'n'] $install_docker       = 'y',
+  Enum['y', 'n'] $init_swarm           = 'y',
+  Enum['y', 'n'] $install_compose      = 'y',
+  Enum['y', 'n'] $install_remediate    = 'y',
   Enum['y', 'n'] $configure_firewall   = 'n',
   String $license_file                 = undef,
   Array $docker_users                  = ['centos'],
@@ -131,15 +132,20 @@ plan remediate_install (
       }
       'Windows':           {
         if($myfacts['os']['release']['major'] != '10') {
+          $msg = "Remediate is not supported on Windows version ${myfacts['os']['release']['major']}. It is only supported on Windows 10."
           if($enforce_system_requirements) {
-            fail_plan("Remediate is not supported on Windowa version ${myfacts['os']['release']['major']}. It has to be at least 10.")
+            fail_plan($msg)
           } else {
-            crit("Remediate is not supported on Windowa version ${myfacts['os']['release']['major']}. It has to be at least 10.")
+            crit($msg)
           }
         }
       }
       default:             {
-        fail_plan("OS ${myfacts['os']['name']} is not supported.")
+        if($enforce_system_requirements) {
+          fail_plan("OS ${myfacts['os']['name']} is not supported.")
+        } else {
+          crit("OS ${myfacts['os']['name']} is not supported.")
+        }
       }
     }
 
@@ -187,40 +193,24 @@ plan remediate_install (
     out::message('====================================================================')
     out::message(' ')
 
-    # run installation
+    # run Remediate installation steps
     if($install_docker == 'y') {
       # install docker and additional rpm packages
       out::message('installing docker')
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-          class { 'docker':
-            docker_ee      => $docker_ee,
-            manage_package => true,
-            manage_service => true,
-            docker_users   => $docker_users,
-          }
-
-          if($myfacts['kernel'] != 'Windows') {
-            package { 'yum-utils':
-              ensure => installed,
-            }
-
-            package { 'device-mapper-persistent-data':
-              ensure => installed,
-            }
-
-            package {'lvm2':
-              ensure => installed
-            }
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+          class { 'remediate_install::install::docker':
+            docker_users => $docker_users,
+            docker_ee    => $docker_ee,
           }
         }
       }
     }
 
     if($init_swarm == 'y') {
-      out::message('initialize docker swarm')
+      out::message('initializing docker swarm')
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           docker::swarm {'swarm':
             init => true,
           }
@@ -230,20 +220,24 @@ plan remediate_install (
 
     # check for docker compose and install if not present
     if($install_compose == 'y') {
-      out::message('install docker compose')
+      out::message('installing docker compose')
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-          if($myfacts['kernel'] == 'Windows') {
-            class {'docker::compose':
-              ensure  => present,
-              version => $compose_version,
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+          if($facts['kernel'].downcase() == 'windows') {
+            $compose_params = {
+              'ensure'  => present,
+              'version' => $compose_version,
             }
           } else {
-            class {'docker::compose':
+            $compose_params = {
               ensure       => present,
               version      => $compose_version,
               install_path => $compose_install_path,
             }
+          }
+
+          class {'docker::compose':
+            *  => $compose_params,
           }
         }
       }
@@ -254,39 +248,28 @@ plan remediate_install (
 
     # configure firewall
     if($configure_firewall == 'y') {
-      out::message('configuring firewall')
       without_default_logging() || {
-        if($myfacts['kernel'] == 'Linux') {
-          $res = run_task('remediate_install::check_firewall', $nodes)
-          $fwd = $res.first
-          if(($fwd['iptables'] == 'enabled') or ($fwd['firewalld'] == 'enabled')) {
-            apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
-              class { 'remediate_install::firewall':
-                kernel => $myfacts['kernel'],
-              }
-            }
-          } else {
-            warning('No firewall running on host, no configuration will be done')
-          }
-        } elsif($myfacts['kernel'] == 'Windows') {
-          apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        $res = run_task('remediate_install::check_firewall', $nodes)
+        $fwd = $res.first
+        if($fwd['firewall'] == 'disabled') {
+          out::message('configuring firewall')
+          apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
             class { 'remediate_install::firewall':
-              kernel => $myfacts['kernel'],
             }
           }
+        } else {
+          warning('Firewall already running on host, no configuration will be done')
         }
-
       }
     }
 
     # install remedeate
     if($install_remediate == 'y') {
-      out::message('install remediate')
-      case $myfacts['kernel'] {
-        'Linux': {
+      case $myfacts['kernel'].downcase() {
+        'linux': {
           $install_dir = $unix_install_dir
         }
-        'Windows': {
+        'windows': {
           $install_dir = $win_install_dir
         }
         default: {
@@ -294,18 +277,27 @@ plan remediate_install (
         }
       }
 
-      out::message("installing Remediate in ${install_dir}")
+      if($myfacts['kernel'].downcase() == 'windows') {
+        $remote_license_file = 'C:/Users/Administrator/Documents/license.json'
+      } else {
+        $remote_license_file = '/tmp/license.json'
+      }
+
+      upload_file($license_file, $remote_license_file, $target, "Uploading license file ${license_file} to ${remote_license_file}")
+
+      out::message("installing Puppet Remediate in ${install_dir}")
 
       without_default_logging() || {
-        apply($nodes, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
+        apply($target, _catch_errors => true, _noop => $noop_mode, _run_as => root) {
           class { 'remediate_install::install':
             install_dir  => $install_dir,
-            license_file => $license_file,
+            license_file => $remote_license_file,
             compose_dir  => $compose_path,
-            kernel       => $myfacts['kernel'],
           }
         }
       }
     }
   }
+
+  return('installation finished')
 }
