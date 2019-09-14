@@ -91,7 +91,10 @@ plan remediate_install (
     $target.apply_prep()
     $myfacts = facts($target)
 
-    # check system requirements
+    if(($myfacts['kernel'].downcase() == 'windows') and ($docker_ee == false)) {
+      fail_plan('Docker installation on Windows systems require Docker EE version!')
+    }
+
     # check hardware platform
     if($myfacts['os']['hardware'] != 'x86_64') {
       if($enforce_system_requirements) {
@@ -275,6 +278,16 @@ plan remediate_install (
         default: {
           fail_plan("unknown system kernel ${myfacts['kernel']}")
         }
+      }
+
+      if(file::exists($license_file)) {
+        if(file::readable($license_file)) {
+          info('licenfile is readable')
+        } else {
+          fail_plan("License file ${license_file} is not readbale!")
+        }
+      } else {
+        fail_plan("License file ${license_file} does not exists!")
       }
 
       if($myfacts['kernel'].downcase() == 'windows') {
