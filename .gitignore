@@ -25,6 +25,3 @@
 .project
 .envrc
 /inventory.yaml
-modules/*
-.rerun.json
-*.bak
