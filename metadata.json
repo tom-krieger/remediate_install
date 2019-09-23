@@ -1,6 +1,6 @@
 {
   "name": "tomkrieger-remediate_install",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "author": "Thomas Krieger",
   "summary": "Remediate installer",
   "license": "Apache-2.0",
