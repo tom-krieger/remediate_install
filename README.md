@@ -21,7 +21,7 @@ The installation process needs several files from the internet. Puppet modules w
 
 ## System requirements
 
-Remediate has its own system requirements. Before you begin to install, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html). This module can check the system requirements and stop the installation if the requirements are not met. Additionally there's a plan for checking only the requirements and printing log messaged if some requirements are not met.
+Remediate has its own system requirements. Before you begin to install, please check the [system requirements](https://puppet.com/docs/remediate/latest/system_requirements.html). This module can check the system requirements and stop the installation if the requirements are not met. Additionally there's a plan for checking only the requirements and printing log messages if some requirements are not met.
 
 Bolt uses winrm transport to connect to the Windows boxes. Please make sure the Windows boxes have winrm enabled and firewalls are configured to grant access to the winrm ports on the Windows boxes.
 
