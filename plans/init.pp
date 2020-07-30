@@ -153,7 +153,7 @@ plan remediate_install (
     }
 
     # check system memory
-    if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
+    if($myfacts['memory']['system']['total_bytes'] < 8201568256) {
       if($enforce_system_requirements) {
         fail_plan('System memory has to be at least 8 GB.')
       } else {
@@ -176,7 +176,7 @@ plan remediate_install (
     out::message("Install docker .............. : ${install_docker}")
     out::message("     -> docker ee ........... : ${docker_ee}")
     out::message("Initialize docker swarm ..... : ${init_swarm}")
-    out::message("Install docker-comose ....... : ${install_compose}")
+    out::message("Install docker-compose ...... : ${install_compose}")
     if($install_compose == 'y') {
       out::message("Compose install directory ... : ${compose_install_path}")
       out::message("Docker compose version ...... : ${compose_version}")

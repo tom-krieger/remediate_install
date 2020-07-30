@@ -11,6 +11,7 @@
 # @example Requiremets check on Ubuntu host
 #    bolt plan run remediate_install::check_requirements -n <host> --run-as root --user ubuntu \ 
 #              --private_key <private key file> --no-host-key-check
+#
 plan remediate_install::check_requirements (
   TargetSpec $nodes,
 ) {
@@ -75,7 +76,7 @@ It is only supported on Windows 10.")
     }
 
     # check system memory
-    if($myfacts['memory']['system']['total_bytes'] < 8589934592) {
+    if($myfacts['memory']['system']['total_bytes'] < 8201568256) {
       out::message('   => System memory has to be at least 8 GB.')
       $memsize = 'not ok'
     } else {
