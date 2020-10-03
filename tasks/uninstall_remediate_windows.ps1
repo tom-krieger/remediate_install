@@ -8,6 +8,20 @@ cd $install_dir
 
 docker-compose run remediate stop
 
+docker service ls | grep remediate_ | awk '{print $1;}' | while read srv ; do 
+
+    docker service rm $srv
+    
+done
+
+$Services = (docker service ls) | Out-String | findstr "remediate_"
+foreach ($srv in $Services) {
+  $data = $cont -split "\s+"
+  $id = $data[0]
+  $img = $data[1]
+  docker service rm $id
+}
+
 $Containers = (docker ps -a) | Out-String | findstr "remediate_"
 foreach ($cont in $Containers) {
   $data = $cont -split "\s+"
@@ -26,8 +40,10 @@ foreach ($line in $Images) {
   docker image rm $img
 }
 
-$SECRETS="admin_password
+$SECRETS="aadmin_password
 admin_user
+audit.crt
+audit.key
 controller.crt
 controller.key
 edge.crt
@@ -45,14 +61,14 @@ identity_realm.json
 licensing.crt
 licensing.key
 oauth_client.json
-remote-edge.crt
-remote-edge.key
 root.crt
-root.key
 storage.crt
 storage.key
 ui.crt
 ui.key
+remote-edge.crt
+remote-edge.key
+root.key
 vault.crt
 vault.key
 vr.crt
